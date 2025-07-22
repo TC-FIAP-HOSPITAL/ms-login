@@ -72,47 +72,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john@doe.com.br\",\n    \"username\": \"johnny\",\n    \"password\": \"Password1@\",\n    \"role\": \"CUSTOMER\",\n    \"address\": {\n        \"street\": \"Baker Street\",\n        \"number\": \"221B\",\n        \"complement\": \"\",\n        \"city\": \"London\",\n        \"state\": \"BL\"\n    }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "127.0.0.1:8080/users",
-							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
-							],
-							"port": "8080",
-							"path": [
-								"users"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "[ADMIN] Create Restaurant Owner",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{jwt_admin}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Ronald McDonald\",\n    \"email\": \"ronald@mcdonalds.com.br\",\n    \"username\": \"ronaldmcd\",\n    \"password\": \"Password1@\",\n    \"role\": \"RESTAURANT_OWNER\",\n    \"address\": {\n        \"street\": \"BigMac Street\",\n        \"number\": \"199\",\n        \"complement\": \"\",\n        \"city\": \"French\",\n        \"state\": \"Fries\"\n    }\n}",
+							"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john@doe.com.br\",\n    \"username\": \"johnny\",\n    \"password\": \"Password1@\",\n    \"role\": \"USER\",\n    \"address\": {\n        \"street\": \"Baker Street\",\n        \"number\": \"221B\",\n        \"complement\": \"\",\n        \"city\": \"London\",\n        \"state\": \"BL\"\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -247,7 +207,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "4fd90a00-27ea-4c05-afd6-ba3e9d5cc33e"
+									"value": "2"
 								}
 							]
 						}
@@ -271,7 +231,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"id\": \"4fd90a00-27ea-4c05-afd6-ba3e9d5cc33ej\",\n    \"name\": \"John DoeX\",\n    \"email\": \"john@doe.com.br\",\n    \"username\": \"johnny\",\n    \"password\": \"Password1@\",\n    \"role\": \"CUSTOMER\",\n    \"address\": {\n        \"street\": \"Baker Street\",\n        \"number\": \"221Bs\",\n        \"complement\": \"\",\n        \"city\": \"London\",\n        \"state\": \"BL\"\n    }\n}",
+							"raw": "{\n    \"id\": \"2\",\n    \"name\": \"John DoeX\",\n    \"email\": \"john@doe.com.br\",\n    \"username\": \"johnny\",\n    \"password\": \"Password1@\",\n    \"role\": \"ADMIN\",\n    \"address\": {\n        \"street\": \"Baker Street\",\n        \"number\": \"221Bs\",\n        \"complement\": \"\",\n        \"city\": \"London\",\n        \"state\": \"BL\"\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -356,7 +316,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Jane\",\n    \"email\": \"jane@uol.com.br\",\n    \"username\": \"jane\",\n    \"password\": \"Password1@\",\n    \"role\": \"CUSTOMER\",\n    \"address\": {\n        \"street\": \"Baker Street\",\n        \"number\": \"221C\",\n        \"complement\": \"Apt 2\",\n        \"city\": \"London\",\n        \"state\": \"BL\"\n    }\n}",
+							"raw": "{\n    \"name\": \"Jane\",\n    \"email\": \"jane@uol.com.br\",\n    \"username\": \"jane\",\n    \"password\": \"Password1@\",\n    \"role\": \"USER\",\n    \"address\": {\n        \"street\": \"Baker Street\",\n        \"number\": \"221C\",\n        \"complement\": \"Apt 2\",\n        \"city\": \"London\",\n        \"state\": \"BL\"\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -487,7 +447,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "5ab90218-3b7a-428f-b1c9-db1eeb028b54"
+									"value": "4"
 								}
 							]
 						}
@@ -652,7 +612,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "80e484ea-f912-41d7-820a-d278a1d384ed"
+									"value": "4"
 								}
 							]
 						}
