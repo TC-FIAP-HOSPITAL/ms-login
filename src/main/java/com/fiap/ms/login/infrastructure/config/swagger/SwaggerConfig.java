@@ -10,7 +10,7 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI apiInfo() {
         return new OpenAPI()
-                .info(new Info().title("WeFood Login API")
+                .info(new Info().title("MS-Login API")
                         .description("API documentation login microservice")
                         .version("v1.0"));
     }

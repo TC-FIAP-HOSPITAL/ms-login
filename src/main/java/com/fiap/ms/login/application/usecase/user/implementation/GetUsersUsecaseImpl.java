@@ -1,6 +1,6 @@
 package com.fiap.ms.login.application.usecase.user.implementation;
 
-import com.fiap.ms.login.application.gateways.PasswordEncoder;
+import com.fiap.ms.login.application.gateways.PasswordEncoderGateway;
 import com.fiap.ms.login.application.usecase.user.GetUsersUsecase;
 import com.fiap.ms.login.domain.model.User;
 import com.fiap.ms.login.domain.model.UserRepository;
@@ -19,7 +19,7 @@ public class GetUsersUsecaseImpl implements GetUsersUsecase {
 
     public GetUsersUsecaseImpl(
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder,
+            PasswordEncoderGateway passwordEncoderGateway,
             SecurityUtil securityUtil
     ) {
         this.userRepository = userRepository;

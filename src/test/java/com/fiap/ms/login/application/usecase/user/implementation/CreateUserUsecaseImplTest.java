@@ -1,6 +1,6 @@
 package com.fiap.ms.login.application.usecase.user.implementation;
 
-import com.fiap.ms.login.application.gateways.PasswordEncoder;
+import com.fiap.ms.login.application.gateways.PasswordEncoderGateway;
 import com.fiap.ms.login.domain.model.Address;
 import com.fiap.ms.login.domain.model.Role;
 import com.fiap.ms.login.domain.model.User;
@@ -29,7 +29,7 @@ class CreateUserUsecaseImplTest {
     private UserRepository userRepository;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
+    private PasswordEncoderGateway passwordEncoderGateway;
 
     @Mock
     private SecurityUtil securityUtil;
@@ -56,7 +56,7 @@ class CreateUserUsecaseImplTest {
     @Test
     void createUser_regularUser_shouldSaveAndReturnUser() {
         when(securityUtil.isAdmin()).thenReturn(false);
-        when(passwordEncoder.encode(anyString())).thenReturn("encoded_password");
+        when(passwordEncoderGateway.encode(anyString())).thenReturn("encoded_password");
         when(userRepository.save(any(User.class))).thenReturn(regularUser);
 
         User result = createUserUsecase.createUser(regularUser);
@@ -68,14 +68,14 @@ class CreateUserUsecaseImplTest {
         assertEquals(regularUser.getUsername(), result.getUsername());
         assertEquals(regularUser.getRole(), result.getRole());
 
-        verify(passwordEncoder).encode("password");
+        verify(passwordEncoderGateway).encode("password");
         verify(userRepository).save(regularUser);
     }
 
     @Test
     void createUser_adminUserByAdmin_shouldSaveAndReturnUser() {
         when(securityUtil.isAdmin()).thenReturn(true);
-        when(passwordEncoder.encode(anyString())).thenReturn("encoded_password");
+        when(passwordEncoderGateway.encode(anyString())).thenReturn("encoded_password");
         when(userRepository.save(any(User.class))).thenReturn(adminUser);
 
         User result = createUserUsecase.createUser(adminUser);
@@ -87,7 +87,7 @@ class CreateUserUsecaseImplTest {
         assertEquals(adminUser.getUsername(), result.getUsername());
         assertEquals(adminUser.getRole(), result.getRole());
 
-        verify(passwordEncoder).encode("password");
+        verify(passwordEncoderGateway).encode("password");
         verify(userRepository).save(adminUser);
     }
 

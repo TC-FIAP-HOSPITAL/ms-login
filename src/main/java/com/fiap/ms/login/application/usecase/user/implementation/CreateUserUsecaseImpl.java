@@ -1,6 +1,6 @@
 package com.fiap.ms.login.application.usecase.user.implementation;
 
-import com.fiap.ms.login.application.gateways.PasswordEncoder;
+import com.fiap.ms.login.application.gateways.PasswordEncoderGateway;
 import com.fiap.ms.login.application.usecase.user.CreateUserUsecase;
 import com.fiap.ms.login.domain.model.Role;
 import com.fiap.ms.login.domain.model.User;
@@ -14,16 +14,16 @@ import org.springframework.stereotype.Service;
 public class CreateUserUsecaseImpl implements CreateUserUsecase {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoderGateway passwordEncoderGateway;
     private final SecurityUtil securityUtil;
 
     public CreateUserUsecaseImpl(
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder,
+            PasswordEncoderGateway passwordEncoderGateway,
             SecurityUtil securityUtil
     ) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.passwordEncoderGateway = passwordEncoderGateway;
         this.securityUtil = securityUtil;
     }
 
@@ -35,7 +35,7 @@ public class CreateUserUsecaseImpl implements CreateUserUsecase {
             throw new AccessDeniedException(null);
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoderGateway.encode(user.getPassword()));
         return userRepository.save(user);
     }
 }

@@ -1,6 +1,6 @@
 package com.fiap.ms.login.application.usecase.user.implementation;
 
-import com.fiap.ms.login.application.gateways.PasswordEncoder;
+import com.fiap.ms.login.application.gateways.PasswordEncoderGateway;
 import com.fiap.ms.login.domain.model.Address;
 import com.fiap.ms.login.domain.model.Role;
 import com.fiap.ms.login.domain.model.User;
@@ -28,7 +28,7 @@ class GetUsersUsecaseImplTest {
     private UserRepository userRepository;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
+    private PasswordEncoderGateway passwordEncoderGateway;
 
     @Mock
     private SecurityUtil securityUtil;

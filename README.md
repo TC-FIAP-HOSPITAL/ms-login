@@ -2,7 +2,7 @@
 
 ## Architecture and Java Development
 
-### WeFood - Restaurant Management System
+### MS-Login Microservice
 
 ---
 
@@ -11,20 +11,20 @@
 The **Tech Challenge** is a hands-on project from FIAP’s postgraduate course in Java Architecture and Development, aiming to create a restaurant management system, developed in phases.
 
 > **Main goal:**
-> Allow multiple restaurants to use a single, efficient system, reducing costs and offering a great experience for restaurants and customers alike.
+> This microservice handles user authentication and management for the MS-Login system, allowing secure access to the platform for restaurants and customers.
 
 ---
 
-## Phase 1 Objective
+## Microservice Objective
 
-Develop a robust and complete backend using **Spring Boot**, focused on user management. The implemented operations include:
+Develop a robust and complete login microservice using **Spring Boot**, focused on user management. The implemented operations include:
 
 - User creation
 - User data updating
 - User deletion
 - Login validation
 
-The project is Docker-ready, uses Docker Compose for orchestration, and is integrated with a relational database (PostgreSQL or H2).
+The microservice is Docker-ready, uses Docker Compose for orchestration, and is integrated with a relational database (PostgreSQL or H2).
 
 ---
 
@@ -47,7 +47,7 @@ The project is Docker-ready, uses Docker Compose for orchestration, and is integ
         - City (`String`)
         - State (`String`)
 
-- **Password change**: Users can change their passwordEncoder.
+- **Password change**: Users can change their passwordEncoderGateway.
 - **Login validation**: Checks user credentials.
 - **User deletion**: Remove registered users.
 
@@ -71,43 +71,49 @@ The backend is developed in **Spring Boot**, follows **SOLID** principles, and u
 ## Key Modules
 
 - <b>infrastructure/config:</b>
-    - <b>SwaggerConfig</b> - API documentation configuration (Swagger/OpenAPI)
-    - <b>AdminUserInitializer</b> - Initializes admin user(s) at startup
+    - <b>swagger/SwaggerConfig</b> - API documentation configuration (Swagger/OpenAPI)
+    - <b>init/AdminUserInitializer</b> - Initializes admin user(s) at startup
 
-- <b>adapters/inbound/controller:</b>
+- <b>entrypoint/controllers:</b>
     - <b>AuthController</b> - Handles POST /login (JWT authentication)
     - <b>UserController</b> - Handles GET, POST, PUT, DELETE /users endpoints for user management with access control
 
-- <b>domain/user:</b>
+- <b>domain/model:</b>
     - <b>User</b> - Main user domain model/entity
-    - <b>Id, Name, Email, Username, Password</b> - Value objects or user fields
     - <b>Role</b> - User role enum (ADMIN, CUSTOMER, etc)
     - <b>Address</b> - Value object/entity for user addresses
+    - <b>UserRepository</b> - Repository interface for user persistence
 
-- <b>dto:</b>
+- <b>entrypoint/controllers/dto:</b>
     - <b>UserDtoRequest</b> - Used for creating/updating a user (client → server)
     - <b>UserDtoResponse</b> - Used in user API responses (server → client)
     - <b>AddressDto</b> - Used as part of the address payload
 
-- <b>infrastructure/exceptions:</b>
+- <b>entrypoint/controllers/handler:</b>
     - <b>ApiError</b> - Standard API error response body
     - <b>GlobalExceptionHandler</b> - Handles and maps exceptions to HTTP responses
+
+- <b>application/usecase/user/exceptions:</b>
     - <b>UserAlreadyExistsException, UserNotFoundException</b> - Specific domain exceptions
 
-- <b>utils/mapper:</b>
+- <b>entrypoint/controllers/mappers:</b>
     - <b>UserMapper</b> - Maps between User/UserDto and entity/domain
     - <b>AddressMapper</b> - Maps between Address/AddressDto and entity/domain
 
-- <b>adapters/outbound/repositories/entities:</b>
+- <b>infrastructure/dataproviders/database/entities:</b>
     - <b>JpaUserEntity, JpaAddressEntity</b> - JPA entity mappings for persistence
-- <b>adapters/outbound/repositories:</b>
+
+- <b>application/gateways:</b>
     - <b>JpaUserRepository</b> - Spring Data repository interface
+    - <b>PasswordEncoder</b> - Password encoding interface
+
+- <b>infrastructure/dataproviders/database/implementations:</b>
     - <b>UserRepositoryImpl</b> - Implementation for domain persistence
 
-- <b>adapters/outbound/password:</b>
-    - <b>BcryptPasswordEncoderEncoderAdapter, PasswordEncoder</b> - Password hashing/encoding abstractions
+- <b>infrastructure/password:</b>
+    - <b>BcryptPasswordEncoderImpl</b> - Password hashing/encoding implementation
 
-- <b>security:</b>
+- <b>infrastructure/config/security:</b>
     - <b>SecurityConfig</b> - Overall security configuration (roles, HTTP security)
     - <b>JwtAuthenticationFilter</b> - Parses JWT from requests
     - <b>JwtUtil</b> - Signs, validates, and extracts claims from JWTs
@@ -116,9 +122,9 @@ The backend is developed in **Spring Boot**, follows **SOLID** principles, and u
     - <b>SecurityExceptionHandlerConfig</b> - Security-specific exception handling
     - <b>SecurityUtil</b> - Helper methods for current authentication
 
-- <b>application/usecases:</b>
-    - <b>UserUseCase</b> - Use case/service interface
-    - <b>UserUsecaseImpl</b> - Main business service implementation
+- <b>application/usecase/user:</b>
+    - <b>CreateUserUsecase, GetUsersUsecase, etc.</b> - Use case interfaces
+    - <b>implementation/CreateUserUsecaseImpl, etc.</b> - Use case implementations
 
 ---
 
@@ -142,7 +148,7 @@ The backend is developed in **Spring Boot**, follows **SOLID** principles, and u
 
 - **Default Admin User:**
     - `login`: `admin`
-    - `passwordEncoder`: Value from `admin.passwordEncoder` in `application.properties`
+    - `passwordEncoderGateway`: Value from `admin.passwordEncoderGateway` in `application.properties`
 
 - **JWT Secret:**
     - Value from `jwt.secret` in `application.properties`
@@ -157,19 +163,19 @@ The backend is developed in **Spring Boot**, follows **SOLID** principles, and u
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/dpcamargo/fiap-wefood.git
+git clone https://github.com/your-username/ms-login.git
 ```
 
 ### 2. Go to the Project Directory
 
 ```bash
-cd wefood
+cd ms-login
 ```
 
-### 3. Start WeFood
+### 3. Start the Login Microservice
 
 ```bash
-docker-compose -f docker-compose-h2.yaml up -d
+docker-compose -f docker-compose-local.yaml up -d
 ````
 or
 ```
@@ -179,7 +185,7 @@ docker-compose -f docker-compose-postgres.yaml up -d
 ### 4. Import Collection
 
 ```bash
-Import Postman Collection from /postman/WeFood.json
+Import Postman Collection from /postman/Postman.json
 ```
 
 ---
@@ -187,78 +193,97 @@ Import Postman Collection from /postman/WeFood.json
 ## 📁 Project Structure
 
 ```plaintext
-wefood/
+ms-login/
 ├── Dockerfile             
-├── docker-compose-h2.yaml       
+├── docker-compose-local.yaml       
 ├── docker-compose-postgres.yaml
 ├── docs/
 │   └── ..
 ├── postman/
-│   └── WeFood.json
+│   └── Postman.json
 ├── README.md
 └── src/
     ├── main/
     │   ├── java/
-    │   │   └── br/com/fiap/wefood/
-    │   │       ├── adapters/
-    │   │       │   ├── inbound/controller/
-    │   │       │   │   ├── AuthController.java
-    │   │       │   │   └── UserController.java
-    │   │       │   └── outbound/
-    │   │       │       ├── password/
-    │   │       │       └── repositories/
-    │   │       │           ├── entities/
-    │   │       │           │   ├── JpaAddressEntity.java
-    │   │       │           │   └── JpaUserEntity.java
-    │   │       │           ├── JpaUserRepository.java
-    │   │       │           └── UserRepositoryImpl.java
-    │   │       ├── application/usecases/
-    │   │       │   ├── UserUseCase.java
-    │   │       │   └── UserUsecaseImpl.java
-    │   │       ├── domain/user/
-    │   │       │   ├── Address.java
-    │   │       │   ├── Role.java
-    │   │       │   ├── User.java
-    │   │       │   └── UserRepository.java
-    │   │       ├── dto/
-    │   │       │   ├── AddressDto.java
-    │   │       │   ├── UserDtoRequest.java
-    │   │       │   └── UserDtoResponse.java
+    │   │   └── com/fiap/ms/login/
+    │   │       ├── application/
+    │   │       │   ├── gateways/
+    │   │       │   │   ├── JpaUserRepository.java
+    │   │       │   │   └── PasswordEncoder.java
+    │   │       │   └── usecase/
+    │   │       │       └── user/
+    │   │       │           ├── CreateUserUsecase.java
+    │   │       │           ├── DeleteUserUsecase.java
+    │   │       │           ├── GetUserByIdUsecase.java
+    │   │       │           ├── GetUsersUsecase.java
+    │   │       │           ├── UpdateUserUsecase.java
+    │   │       │           ├── exceptions/
+    │   │       │           │   ├── UserAlreadyExistsException.java
+    │   │       │           │   └── UserNotFoundException.java
+    │   │       │           └── implementation/
+    │   │       │               ├── CreateUserUsecaseImpl.java
+    │   │       │               ├── DeleteUserUsecaseImpl.java
+    │   │       │               ├── GetUserByIdUsecaseImpl.java
+    │   │       │               ├── GetUsersUsecaseImpl.java
+    │   │       │               └── UpdateUserUsecaseImpl.java
+    │   │       ├── domain/
+    │   │       │   └── model/
+    │   │       │       ├── Address.java
+    │   │       │       ├── Role.java
+    │   │       │       ├── User.java
+    │   │       │       └── UserRepository.java
+    │   │       ├── entrypoint/
+    │   │       │   └── controllers/
+    │   │       │       ├── AuthController.java
+    │   │       │       ├── UserController.java
+    │   │       │       ├── dto/
+    │   │       │       │   ├── AddressDto.java
+    │   │       │       │   ├── UserDtoRequest.java
+    │   │       │       │   └── UserDtoResponse.java
+    │   │       │       ├── handler/
+    │   │       │       │   ├── ApiError.java
+    │   │       │       │   └── GlobalExceptionHandler.java
+    │   │       │       └── mappers/
+    │   │       │           ├── AddressMapper.java
+    │   │       │           └── UserMapper.java
     │   │       ├── infrastructure/
     │   │       │   ├── config/
-    │   │       │   │   ├── AdminUserInitializer.java
-    │   │       │   │   └── SwaggerConfig.java
-    │   │       │   └── exceptions/
-    │   │       │       ├── ApiError.java
-    │   │       │       ├── GlobalExceptionHandler.java
-    │   │       │       ├── UserAlreadyExistsException.java
-    │   │       │       └── UserNotFoundException.java
-    │   │       ├── security/
-    │   │       │   ├── JwtAuthenticationFilter.java
-    │   │       │   ├── JwtUtil.java
-    │   │       │   ├── MyUserDetails.java
-    │   │       │   ├── MyUserDetailsService.java
-    │   │       │   ├── SecurityConfig.java
-    │   │       │   ├── SecurityExceptionHandlerConfig.java
-    │   │       │   └── SecurityUtil.java
-    │   │       ├── utils/mapper/
-    │   │       │   ├── AddressMapper.java
-    │   │       │   └── UserMapper.java
-    │   │       └── WefoodApplication.java
+    │   │       │   │   ├── init/
+    │   │       │   │   │   └── AdminUserInitializer.java
+    │   │       │   │   ├── security/
+    │   │       │   │   │   ├── JwtAuthenticationFilter.java
+    │   │       │   │   │   ├── JwtUtil.java
+    │   │       │   │   │   ├── MyUserDetails.java
+    │   │       │   │   │   ├── MyUserDetailsService.java
+    │   │       │   │   │   ├── SecurityConfig.java
+    │   │       │   │   │   ├── SecurityExceptionHandlerConfig.java
+    │   │       │   │   │   └── SecurityUtil.java
+    │   │       │   │   └── swagger/
+    │   │       │   │       └── SwaggerConfig.java
+    │   │       │   ├── dataproviders/
+    │   │       │   │   └── database/
+    │   │       │   │       ├── entities/
+    │   │       │   │       │   ├── JpaAddressEntity.java
+    │   │       │   │       │   └── JpaUserEntity.java
+    │   │       │   │       └── implementations/
+    │   │       │   │           └── UserRepositoryImpl.java
+    │   │       │   └── password/
+    │   │       │       └── BcryptPasswordEncoderImpl.java
+    │   │       └── MsLoginApplication.java
     │   └── resources/
     │       ├── application.properties
     │       ├── application-h2.properties
     │       ├── application-postgres.properties
     │       ├── static/
     │       └── templates/
-    └── test/java/br/com/fiap/wefood/
+    └── test/java/com/fiap/ms/login/
 ```
 
 ---
 
 ## Endpoints
 
-- Postman collection: `/postman/wefood.json`
+- Postman collection: `/postman/Postman.json`
 - Application: [http://localhost:8080](http://localhost:8080)
 - Swagger UI: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 - OpenAPI Docs: [http://localhost:8080/api-docs](http://localhost:8080/api-docs)
@@ -442,7 +467,7 @@ wefood/
 }
 ```
 
-# 🥡 <b>WeFood - Postman API Collection Documentation</b>
+# 🥡 <b>MS-Login - Postman API Collection Documentation</b>
 
 This API supports typical <b>user management operations</b> (login, create user, update, delete, etc.) for two roles: <code>ADMIN</code> and <code>USER</code>. The list below explains how each call works, what you have to provide, and what you'll get back.
 

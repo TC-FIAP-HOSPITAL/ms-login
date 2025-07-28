@@ -1,6 +1,6 @@
 package com.fiap.ms.login.application.usecase.user.implementation;
 
-import com.fiap.ms.login.application.gateways.PasswordEncoder;
+import com.fiap.ms.login.application.gateways.PasswordEncoderGateway;
 import com.fiap.ms.login.domain.model.Address;
 import com.fiap.ms.login.domain.model.Role;
 import com.fiap.ms.login.domain.model.User;
@@ -29,7 +29,7 @@ class UpdateUserUsecaseImplTest {
     private UserRepository userRepository;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
+    private PasswordEncoderGateway passwordEncoderGateway;
 
     @Mock
     private SecurityUtil securityUtil;
@@ -55,7 +55,7 @@ class UpdateUserUsecaseImplTest {
     @Test
     void updateUser_sameUser_shouldUpdateAndReturnUser() {
         when(securityUtil.getUserId()).thenReturn(1L);
-        when(passwordEncoder.encode(anyString())).thenReturn("encoded_password");
+        when(passwordEncoderGateway.encode(anyString())).thenReturn("encoded_password");
         when(userRepository.update(any(User.class))).thenReturn(user1);
 
         User result = updateUserUsecase.updateUser(user1);
@@ -66,7 +66,7 @@ class UpdateUserUsecaseImplTest {
         assertEquals(user1.getEmail(), result.getEmail());
         assertEquals(user1.getUsername(), result.getUsername());
 
-        verify(passwordEncoder).encode("password");
+        verify(passwordEncoderGateway).encode("password");
         verify(userRepository).update(user1);
     }
 
@@ -74,7 +74,7 @@ class UpdateUserUsecaseImplTest {
     void updateUser_adminUpdatingOtherUser_shouldUpdateAndReturnUser() {
         when(securityUtil.getUserId()).thenReturn(1L);
         when(securityUtil.isAdmin()).thenReturn(true);
-        when(passwordEncoder.encode(anyString())).thenReturn("encoded_password");
+        when(passwordEncoderGateway.encode(anyString())).thenReturn("encoded_password");
         when(userRepository.update(any(User.class))).thenReturn(user2);
 
         User result = updateUserUsecase.updateUser(user2);
@@ -85,7 +85,7 @@ class UpdateUserUsecaseImplTest {
         assertEquals(user2.getEmail(), result.getEmail());
         assertEquals(user2.getUsername(), result.getUsername());
 
-        verify(passwordEncoder).encode("password");
+        verify(passwordEncoderGateway).encode("password");
         verify(userRepository).update(user2);
     }
 

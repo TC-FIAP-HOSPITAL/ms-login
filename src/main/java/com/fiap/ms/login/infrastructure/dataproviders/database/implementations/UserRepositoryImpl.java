@@ -2,7 +2,7 @@ package com.fiap.ms.login.infrastructure.dataproviders.database.implementations;
 
 import com.fiap.ms.login.infrastructure.dataproviders.database.entities.JpaAddressEntity;
 import com.fiap.ms.login.infrastructure.dataproviders.database.entities.JpaUserEntity;
-import com.fiap.ms.login.application.gateways.JpaUserRepository;
+import com.fiap.ms.login.application.gateways.JpaUserRepositoryGateway;
 import com.fiap.ms.login.domain.model.Address;
 import com.fiap.ms.login.domain.model.User;
 import com.fiap.ms.login.domain.model.UserRepository;
@@ -21,28 +21,28 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UserRepositoryImpl implements UserRepository {
 
-    private final JpaUserRepository jpaUserRepository;
+    private final JpaUserRepositoryGateway jpaUserRepositoryGateway;
     private final EntityManager entityManager;
 
 
     public UserRepositoryImpl(
-            JpaUserRepository jpaUserRepository,
+            JpaUserRepositoryGateway jpaUserRepositoryGateway,
             EntityManager entityManager
     ) {
-        this.jpaUserRepository = jpaUserRepository;
+        this.jpaUserRepositoryGateway = jpaUserRepositoryGateway;
         this.entityManager = entityManager;
     }
 
     @Override
     public User save(User user) {
         JpaUserEntity userEntity = new JpaUserEntity(user);
-        JpaUserEntity savedUser = jpaUserRepository.save(userEntity);
+        JpaUserEntity savedUser = jpaUserRepositoryGateway.save(userEntity);
         return UserMapper.entityToDomain(savedUser);
     }
 
     @Override
     public User update(User user) {
-        JpaUserEntity userEntity = jpaUserRepository.findById(user.getId())
+        JpaUserEntity userEntity = jpaUserRepositoryGateway.findById(user.getId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         // update user fields
@@ -71,7 +71,7 @@ public class UserRepositoryImpl implements UserRepository {
             }
         }
 
-        JpaUserEntity savedUser = jpaUserRepository.save(userEntity);
+        JpaUserEntity savedUser = jpaUserRepositoryGateway.save(userEntity);
         return UserMapper.entityToDomain(savedUser);
     }
 
@@ -80,28 +80,28 @@ public class UserRepositoryImpl implements UserRepository {
         Session session = entityManager.unwrap(Session.class);
         session.enableFilter("deletedFilter").setParameter("isDeleted", false);
         Pageable pageable = PageRequest.of(page, size);
-        return jpaUserRepository.findAll(pageable).stream().map(UserMapper::entityToDomain).collect(Collectors.toList());
+        return jpaUserRepositoryGateway.findAll(pageable).stream().map(UserMapper::entityToDomain).collect(Collectors.toList());
     }
 
     @Override
     public Optional<User> findById(Long id) {
         Session session = entityManager.unwrap(Session.class);
         session.enableFilter("deletedFilter").setParameter("isDeleted", false);
-        return jpaUserRepository.findById(id).map(UserMapper::entityToDomain);
+        return jpaUserRepositoryGateway.findById(id).map(UserMapper::entityToDomain);
     }
 
     @Override
     public Optional<User> findByUsername(String username) {
         Session session = entityManager.unwrap(Session.class);
         session.enableFilter("deletedFilter").setParameter("isDeleted", false);
-        return jpaUserRepository.findByUsername(username).map(UserMapper::entityToDomain);
+        return jpaUserRepositoryGateway.findByUsername(username).map(UserMapper::entityToDomain);
     }
 
     @Override
     public void delete(Long id) {
-        JpaUserEntity userEntity = jpaUserRepository.findById(id)
+        JpaUserEntity userEntity = jpaUserRepositoryGateway.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
         userEntity.setDeleted(true);
-        jpaUserRepository.save(userEntity);
+        jpaUserRepositoryGateway.save(userEntity);
     }
 }

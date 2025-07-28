@@ -1,14 +1,14 @@
 package com.fiap.ms.login.infrastructure.password;
 
-import com.fiap.ms.login.application.gateways.PasswordEncoder;
+import com.fiap.ms.login.application.gateways.PasswordEncoderGateway;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BcryptPasswordEncoderImpl implements PasswordEncoder {
+public class BcryptPasswordEncoderGatewayImpl implements PasswordEncoderGateway {
 
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
-    public BcryptPasswordEncoderImpl(org.springframework.security.crypto.password.PasswordEncoder passwordEncoder) {
+    public BcryptPasswordEncoderGatewayImpl(org.springframework.security.crypto.password.PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 

@@ -1,6 +1,6 @@
 package com.fiap.ms.login.infrastructure.config.init;
 
-import com.fiap.ms.login.application.gateways.PasswordEncoder;
+import com.fiap.ms.login.application.gateways.PasswordEncoderGateway;
 import com.fiap.ms.login.domain.model.Address;
 import com.fiap.ms.login.domain.model.Role;
 import com.fiap.ms.login.domain.model.User;
@@ -15,17 +15,17 @@ import org.springframework.stereotype.Component;
 public class AdminUserInitializer {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoderGateway passwordEncoderGateway;
 
     @Value("${admin.password}")
     private String adminPassword;
 
     public AdminUserInitializer(
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder
+            PasswordEncoderGateway passwordEncoderGateway
             ) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.passwordEncoderGateway = passwordEncoderGateway;
     }
 
     @PostConstruct
@@ -37,7 +37,7 @@ public class AdminUserInitializer {
                     "Administrator",
                     "admin@admin.com",
                     "admin",
-                    passwordEncoder.encode(adminPassword),
+                    passwordEncoderGateway.encode(adminPassword),
                     Role.ADMIN,
                     new Address(
                             null,
