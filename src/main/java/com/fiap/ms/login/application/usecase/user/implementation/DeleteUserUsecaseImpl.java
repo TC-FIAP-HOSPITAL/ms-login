@@ -33,13 +33,11 @@ public class DeleteUserUsecaseImpl implements DeleteUserUsecase {
         if (notSameUser && notAdmin) {
             throw new AccessDeniedException(null);
         }
-        try {
-            restaurantGateway.userHasRestaurant(id);
-            userRepository.delete(id);
-        }
-        catch (Exception e) {
+
+        if (restaurantGateway.userHasRestaurant(id).exists()) {
             throw new UserHasRestaurantException("Deletion failed: User with ID " + userId + " is associated with an existing restaurant.");
         }
 
+        userRepository.delete(id);
     }
 }

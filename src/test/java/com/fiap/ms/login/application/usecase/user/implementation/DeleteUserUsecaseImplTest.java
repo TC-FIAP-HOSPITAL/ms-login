@@ -4,6 +4,7 @@ import com.fiap.ms.login.application.gateways.RestaurantGateway;
 import com.fiap.ms.login.application.usecase.user.exceptions.UserHasRestaurantException;
 import com.fiap.ms.login.domain.model.UserRepository;
 import com.fiap.ms.login.infrastructure.config.security.SecurityUtil;
+import com.fiap.ms.login.infrastructure.http.dto.RestaurantDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,7 +34,7 @@ class DeleteUserUsecaseImplTest {
     void deleteUser_sameUser_shouldDeleteUser() {
         String userId = "1";
         when(securityUtil.getUserId()).thenReturn(1L);
-        doNothing().when(restaurantGateway).userHasRestaurant(1L);
+        when(restaurantGateway.userHasRestaurant(1L)).thenReturn(new RestaurantDto(false));
         doNothing().when(userRepository).delete(1L);
 
         deleteUserUsecase.deleteUser(userId);
@@ -47,7 +48,7 @@ class DeleteUserUsecaseImplTest {
         String userId = "2";
         when(securityUtil.getUserId()).thenReturn(1L);
         when(securityUtil.isAdmin()).thenReturn(true);
-        doNothing().when(restaurantGateway).userHasRestaurant(2L);
+        when(restaurantGateway.userHasRestaurant(2L)).thenReturn(new RestaurantDto(false));
         doNothing().when(userRepository).delete(2L);
 
         deleteUserUsecase.deleteUser(userId);
@@ -71,7 +72,7 @@ class DeleteUserUsecaseImplTest {
     void deleteUser_userHasRestaurant_shouldThrowUserHasRestaurantException() {
         String userId = "1";
         when(securityUtil.getUserId()).thenReturn(1L);
-        doThrow(new RuntimeException("User has restaurant")).when(restaurantGateway).userHasRestaurant(1L);
+        when(restaurantGateway.userHasRestaurant(1L)).thenReturn(new RestaurantDto(true));
 
         UserHasRestaurantException exception = assertThrows(UserHasRestaurantException.class, 
             () -> deleteUserUsecase.deleteUser(userId));

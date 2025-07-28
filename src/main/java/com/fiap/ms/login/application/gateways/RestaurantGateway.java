@@ -1,5 +1,7 @@
 package com.fiap.ms.login.application.gateways;
 
+import com.fiap.ms.login.infrastructure.http.dto.RestaurantDto;
+
 public interface RestaurantGateway {
-    void userHasRestaurant(Long userId);
+    RestaurantDto userHasRestaurant(Long userId);
 }
