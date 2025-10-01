@@ -1,10 +1,8 @@
 package com.fiap.ms.login.application.usecase.user.implementation;
 
-import com.fiap.ms.login.application.gateways.RestaurantGateway;
-import com.fiap.ms.login.application.usecase.user.exceptions.UserHasRestaurantException;
+import com.fiap.ms.login.application.usecase.user.exceptions.UserHasException;
 import com.fiap.ms.login.domain.model.UserRepository;
 import com.fiap.ms.login.infrastructure.config.security.SecurityUtil;
-import com.fiap.ms.login.infrastructure.http.dto.RestaurantDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,9 +22,6 @@ class DeleteUserUsecaseImplTest {
     @Mock
     private SecurityUtil securityUtil;
 
-    @Mock
-    private RestaurantGateway restaurantGateway;
-
     @InjectMocks
     private DeleteUserUsecaseImpl deleteUserUsecase;
 
@@ -34,12 +29,10 @@ class DeleteUserUsecaseImplTest {
     void deleteUser_sameUser_shouldDeleteUser() {
         String userId = "1";
         when(securityUtil.getUserId()).thenReturn(1L);
-        when(restaurantGateway.userHasRestaurant(1L)).thenReturn(new RestaurantDto(false));
         doNothing().when(userRepository).delete(1L);
 
         deleteUserUsecase.deleteUser(userId);
 
-        verify(restaurantGateway).userHasRestaurant(1L);
         verify(userRepository).delete(1L);
     }
 
@@ -48,12 +41,10 @@ class DeleteUserUsecaseImplTest {
         String userId = "2";
         when(securityUtil.getUserId()).thenReturn(1L);
         when(securityUtil.isAdmin()).thenReturn(true);
-        when(restaurantGateway.userHasRestaurant(2L)).thenReturn(new RestaurantDto(false));
         doNothing().when(userRepository).delete(2L);
 
         deleteUserUsecase.deleteUser(userId);
 
-        verify(restaurantGateway).userHasRestaurant(2L);
         verify(userRepository).delete(2L);
     }
 
@@ -65,20 +56,5 @@ class DeleteUserUsecaseImplTest {
 
         assertThrows(AccessDeniedException.class, () -> deleteUserUsecase.deleteUser(userId));
         verify(userRepository, never()).delete(anyLong());
-        verify(restaurantGateway, never()).userHasRestaurant(anyLong());
-    }
-
-    @Test
-    void deleteUser_userHasRestaurant_shouldThrowUserHasRestaurantException() {
-        String userId = "1";
-        when(securityUtil.getUserId()).thenReturn(1L);
-        when(restaurantGateway.userHasRestaurant(1L)).thenReturn(new RestaurantDto(true));
-
-        UserHasRestaurantException exception = assertThrows(UserHasRestaurantException.class, 
-            () -> deleteUserUsecase.deleteUser(userId));
-
-        verify(restaurantGateway).userHasRestaurant(1L);
-        verify(userRepository, never()).delete(anyLong());
-        assert(exception.getMessage().contains("Deletion failed: User with ID 1 is associated with an existing restaurant."));
     }
 }

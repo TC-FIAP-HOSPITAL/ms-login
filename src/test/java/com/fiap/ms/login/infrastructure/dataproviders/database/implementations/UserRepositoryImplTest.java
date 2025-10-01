@@ -1,10 +1,8 @@
 package com.fiap.ms.login.infrastructure.dataproviders.database.implementations;
 
 import com.fiap.ms.login.application.gateways.JpaUserRepositoryGateway;
-import com.fiap.ms.login.domain.model.Address;
 import com.fiap.ms.login.domain.model.Role;
 import com.fiap.ms.login.domain.model.User;
-import com.fiap.ms.login.infrastructure.dataproviders.database.entities.JpaAddressEntity;
 import com.fiap.ms.login.infrastructure.dataproviders.database.entities.JpaUserEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
@@ -49,13 +47,6 @@ class UserRepositoryImplTest {
     @InjectMocks
     private UserRepositoryImpl userRepository;
 
-    @BeforeEach
-    void setUp() {
-        // Ensure fresh mock setup for each test
-        when(entityManager.unwrap(Session.class)).thenReturn(session);
-        when(session.enableFilter("deletedFilter")).thenReturn(filter);
-        when(filter.setParameter("isDeleted", false)).thenReturn(filter);
-    }
 
     @Test
     void save_shouldSaveUser() {
@@ -124,7 +115,7 @@ class UserRepositoryImplTest {
         entity1.setEmail("user1@test.com");
         entity1.setUsername("user1");
         entity1.setPassword("password1");
-        entity1.setRole(Role.USER);
+        entity1.setRole(Role.PACIENTE);
         entity1.setCreatedAt(LocalDateTime.now());
         entity1.setUpdatedAt(LocalDateTime.now());
         
@@ -134,7 +125,7 @@ class UserRepositoryImplTest {
         entity2.setEmail("user2@test.com");
         entity2.setUsername("user2");
         entity2.setPassword("password2");
-        entity2.setRole(Role.USER);
+        entity2.setRole(Role.PACIENTE);
         entity2.setCreatedAt(LocalDateTime.now());
         entity2.setUpdatedAt(LocalDateTime.now());
         
@@ -162,7 +153,7 @@ class UserRepositoryImplTest {
         entity.setEmail("test@test.com");
         entity.setUsername("testuser");
         entity.setPassword("password123");
-        entity.setRole(Role.USER);
+        entity.setRole(Role.PACIENTE);
         entity.setCreatedAt(LocalDateTime.now());
         entity.setUpdatedAt(LocalDateTime.now());
         
@@ -188,10 +179,13 @@ class UserRepositoryImplTest {
         entity.setName("Test User");
         entity.setEmail("test@test.com");
         entity.setPassword("password123");
-        entity.setRole(Role.USER);
+        entity.setRole(Role.PACIENTE);
         entity.setCreatedAt(LocalDateTime.now());
         entity.setUpdatedAt(LocalDateTime.now());
         
+        when(entityManager.unwrap(Session.class)).thenReturn(session);
+        when(session.enableFilter("deletedFilter")).thenReturn(filter);
+        when(filter.setParameter("isDeleted", false)).thenReturn(filter);
         when(jpaUserRepositoryGateway.findByUsername(username)).thenReturn(Optional.of(entity));
 
         Optional<User> result = userRepository.findByUsername(username);

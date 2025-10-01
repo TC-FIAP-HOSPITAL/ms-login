@@ -2,9 +2,11 @@ package com.fiap.ms.login.application.usecase.user.implementation;
 
 import com.fiap.ms.login.application.gateways.PasswordEncoderGateway;
 import com.fiap.ms.login.application.usecase.user.UpdateUserUsecase;
+import com.fiap.ms.login.domain.model.Role;
 import com.fiap.ms.login.domain.model.User;
 import com.fiap.ms.login.domain.model.UserRepository;
 import com.fiap.ms.login.infrastructure.config.security.SecurityUtil;
+import java.util.Optional;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -25,13 +27,19 @@ public class UpdateUserUsecaseImpl implements UpdateUserUsecase {
         this.securityUtil = securityUtil;
     }
 
-    public User updateUser(User user) {
-        boolean notSameUser = !user.getId().equals(securityUtil.getUserId());
-        boolean notAdmin = !securityUtil.isAdmin();
+  public User updateUser(User user) {
+    Long currentUserId = securityUtil.getUserId();
+    boolean isAdmin = securityUtil.isAdmin();
+    Role currentUserRole = securityUtil.getRole();
 
-        if (notSameUser && notAdmin) {
-            throw new AccessDeniedException(null);
-        }
+    if (!isAdmin) {
+      boolean notSameUser = !user.getId().equals(currentUserId);
+      boolean roleChanged = !user.getRole().equals(currentUserRole);
+
+      if (notSameUser || roleChanged) {
+        throw new AccessDeniedException("Not allowed to update this user");
+      }
+    }
 
         user.setPassword(passwordEncoderGateway.encode(user.getPassword()));
         return userRepository.update(user);

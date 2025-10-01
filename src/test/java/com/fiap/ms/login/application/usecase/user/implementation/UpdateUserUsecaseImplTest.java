@@ -1,7 +1,6 @@
 package com.fiap.ms.login.application.usecase.user.implementation;
 
 import com.fiap.ms.login.application.gateways.PasswordEncoderGateway;
-import com.fiap.ms.login.domain.model.Address;
 import com.fiap.ms.login.domain.model.Role;
 import com.fiap.ms.login.domain.model.User;
 import com.fiap.ms.login.domain.model.UserRepository;
@@ -39,22 +38,19 @@ class UpdateUserUsecaseImplTest {
 
     private User user1;
     private User user2;
-    private Address address1;
-    private Address address2;
 
     @BeforeEach
     void setUp() {
         LocalDateTime now = LocalDateTime.now();
-        address1 = new Address(1L, "Test Street", "123", "Apt 4", "Test City", "TS");
-        user1 = new User(1L, "Test User 1", "test1@example.com", "testuser1", "password", Role.USER, now, now, address1);
-
-        address2 = new Address(2L, "Other Street", "456", "Apt 7", "Other City", "OS");
-        user2 = new User(2L, "Test User 2", "test2@example.com", "testuser2", "password", Role.USER, now, now, address2);
+        user1 = new User(1L, "Test User 1", "test1@example.com", "testuser1", "password", Role.PACIENTE, now, now);
+        user2 = new User(2L, "Test User 2", "test2@example.com", "testuser2", "password", Role.PACIENTE, now, now);
     }
 
     @Test
     void updateUser_sameUser_shouldUpdateAndReturnUser() {
         when(securityUtil.getUserId()).thenReturn(1L);
+        when(securityUtil.isAdmin()).thenReturn(false);
+        when(securityUtil.getRole()).thenReturn(Role.PACIENTE);
         when(passwordEncoderGateway.encode(anyString())).thenReturn("encoded_password");
         when(userRepository.update(any(User.class))).thenReturn(user1);
 

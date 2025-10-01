@@ -33,7 +33,7 @@ class MyUserDetailsServiceTest {
         user.setId(1L);
         user.setUsername(username);
         user.setPassword("password123");
-        user.setRole(Role.USER);
+        user.setRole(Role.PACIENTE);
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 
@@ -45,7 +45,7 @@ class MyUserDetailsServiceTest {
         assertEquals(1L, myUserDetails.getUserId());
         assertEquals(username, myUserDetails.getUsername());
         assertEquals("password123", myUserDetails.getPassword());
-        assertTrue(myUserDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")));
+        assertTrue(myUserDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_PACIENTE")));
         
         verify(userRepository).findByUsername(username);
     }

@@ -11,22 +11,20 @@ public class User {
     private Role role;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Address address;
 
     public User() {
     }
 
-    public User(Long id, String name, String email, String username, String password, Role role, Address address) {
+    public User(Long id, String name, String email, String username, String password, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.username = username;
         this.password = password;
         this.role = role;
-        this.address = address;
     }
 
-    public User(Long id, String name, String email, String username, String password, Role role, LocalDateTime createdAt, LocalDateTime updatedAt, Address address) {
+    public User(Long id, String name, String email, String username, String password, Role role, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -35,7 +33,6 @@ public class User {
         this.role = role;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.address = address;
     }
 
     public Long getId() {
@@ -84,14 +81,6 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
     }
 
     public LocalDateTime getCreatedAt() {

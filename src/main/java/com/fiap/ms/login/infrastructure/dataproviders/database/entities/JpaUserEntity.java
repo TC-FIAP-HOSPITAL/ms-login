@@ -2,7 +2,6 @@ package com.fiap.ms.login.infrastructure.dataproviders.database.entities;
 
 import com.fiap.ms.login.domain.model.Role;
 import com.fiap.ms.login.domain.model.User;
-import com.fiap.ms.login.entrypoint.controllers.mappers.AddressMapper;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -58,9 +57,6 @@ public class JpaUserEntity {
     private boolean isDeleted;
     private LocalDateTime deletedAt;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private JpaAddressEntity address;
-
     public JpaUserEntity(User user) {
         this.id = user.getId();
         this.name = user.getName();
@@ -69,6 +65,5 @@ public class JpaUserEntity {
         this.password = user.getPassword();
         this.role = user.getRole();
         this.isDeleted = false;
-        this.address = AddressMapper.domainToEntity(user.getAddress(), this);
     }
 }

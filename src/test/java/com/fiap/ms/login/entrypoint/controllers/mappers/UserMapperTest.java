@@ -1,12 +1,9 @@
 package com.fiap.ms.login.entrypoint.controllers.mappers;
 
-import com.fiap.ms.login.domain.model.Address;
 import com.fiap.ms.login.domain.model.Role;
 import com.fiap.ms.login.domain.model.User;
-import com.fiap.ms.login.entrypoint.controllers.dto.AddressDto;
 import com.fiap.ms.login.entrypoint.controllers.dto.UserDtoRequest;
 import com.fiap.ms.login.entrypoint.controllers.dto.UserDtoResponse;
-import com.fiap.ms.login.infrastructure.dataproviders.database.entities.JpaAddressEntity;
 import com.fiap.ms.login.infrastructure.dataproviders.database.entities.JpaUserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,21 +17,15 @@ class UserMapperTest {
     private User user;
     private JpaUserEntity userEntity;
     private UserDtoRequest userDtoRequest;
-    private Address address;
-    private JpaAddressEntity addressEntity;
-    private AddressDto addressDto;
     private LocalDateTime now;
 
     @BeforeEach
     void setUp() {
         now = LocalDateTime.now();
 
-        address = new Address(1L, "Test Street", "123", "Apt 4", "Test City", "TS");
-        addressDto = new AddressDto("1", "Test Street", "123", "Apt 4", "Test City", "TS");
+        user = new User(1L, "Test User", "test@example.com", "testuser", "password", Role.PACIENTE, now, now);
 
-        user = new User(1L, "Test User", "test@example.com", "testuser", "password", Role.USER, now, now, address);
-
-        userDtoRequest = new UserDtoRequest("1", "Test User", "test@example.com", "testuser", "password", "USER", addressDto);
+        userDtoRequest = new UserDtoRequest("1", "Test User", "test@example.com", "testuser", "password", "PACIENTE");
 
         userEntity = new JpaUserEntity();
         userEntity.setId(1L);
@@ -42,20 +33,9 @@ class UserMapperTest {
         userEntity.setEmail("test@example.com");
         userEntity.setUsername("testuser");
         userEntity.setPassword("password");
-        userEntity.setRole(Role.USER);
+        userEntity.setRole(Role.PACIENTE);
         userEntity.setCreatedAt(now);
         userEntity.setUpdatedAt(now);
-
-        addressEntity = new JpaAddressEntity();
-        addressEntity.setId(1L);
-        addressEntity.setStreet("Test Street");
-        addressEntity.setNumber("123");
-        addressEntity.setComplement("Apt 4");
-        addressEntity.setCity("Test City");
-        addressEntity.setState("TS");
-        addressEntity.setUser(userEntity);
-
-        userEntity.setAddress(addressEntity);
     }
 
     @Test
@@ -70,14 +50,6 @@ class UserMapperTest {
         assertEquals(userEntity.getRole(), result.getRole());
         assertEquals(userEntity.getCreatedAt(), result.getCreatedAt());
         assertEquals(userEntity.getUpdatedAt(), result.getUpdatedAt());
-
-        assertNotNull(result.getAddress());
-        assertEquals(addressEntity.getId(), result.getAddress().getId());
-        assertEquals(addressEntity.getStreet(), result.getAddress().getStreet());
-        assertEquals(addressEntity.getNumber(), result.getAddress().getNumber());
-        assertEquals(addressEntity.getComplement(), result.getAddress().getComplement());
-        assertEquals(addressEntity.getCity(), result.getAddress().getCity());
-        assertEquals(addressEntity.getState(), result.getAddress().getState());
     }
 
     @Test
@@ -104,14 +76,6 @@ class UserMapperTest {
         assertEquals(user.getRole().toString(), result.role());
         assertEquals(user.getCreatedAt(), result.createdAt());
         assertEquals(user.getUpdatedAt(), result.modifiedAt());
-
-        assertNotNull(result.address());
-        assertEquals(address.getId().toString(), result.address().id());
-        assertEquals(address.getStreet(), result.address().street());
-        assertEquals(address.getNumber(), result.address().number());
-        assertEquals(address.getComplement(), result.address().complement());
-        assertEquals(address.getCity(), result.address().city());
-        assertEquals(address.getState(), result.address().state());
     }
 
     @Test
@@ -124,19 +88,11 @@ class UserMapperTest {
         assertEquals(userDtoRequest.username(), result.getUsername());
         assertEquals(userDtoRequest.password(), result.getPassword());
         assertEquals(Role.valueOf(userDtoRequest.role()), result.getRole());
-
-        assertNotNull(result.getAddress());
-        assertEquals(Long.valueOf(addressDto.id()), result.getAddress().getId());
-        assertEquals(addressDto.street(), result.getAddress().getStreet());
-        assertEquals(addressDto.number(), result.getAddress().getNumber());
-        assertEquals(addressDto.complement(), result.getAddress().getComplement());
-        assertEquals(addressDto.city(), result.getAddress().getCity());
-        assertEquals(addressDto.state(), result.getAddress().getState());
     }
 
     @Test
     void dtoToDomain_withNullId_shouldMapCorrectly() {
-        UserDtoRequest dtoWithNullId = new UserDtoRequest(null, "Test User", "test@example.com", "testuser", "password", "USER", addressDto);
+        UserDtoRequest dtoWithNullId = new UserDtoRequest(null, "Test User", "test@example.com", "testuser", "password", "PACIENTE");
 
         User result = UserMapper.dtoToDomain(dtoWithNullId);
 
@@ -146,17 +102,5 @@ class UserMapperTest {
         assertEquals(dtoWithNullId.username(), result.getUsername());
         assertEquals(dtoWithNullId.password(), result.getPassword());
         assertEquals(Role.valueOf(dtoWithNullId.role()), result.getRole());
-    }
-
-    @Test
-    void dtoToDomain_address_shouldMapCorrectly() {
-        Address result = UserMapper.dtoToDomain(addressDto);
-
-        assertNull(result.getId());
-        assertEquals(addressDto.street(), result.getStreet());
-        assertEquals(addressDto.number(), result.getNumber());
-        assertEquals(addressDto.complement(), result.getComplement());
-        assertEquals(addressDto.city(), result.getCity());
-        assertEquals(addressDto.state(), result.getState());
     }
 }

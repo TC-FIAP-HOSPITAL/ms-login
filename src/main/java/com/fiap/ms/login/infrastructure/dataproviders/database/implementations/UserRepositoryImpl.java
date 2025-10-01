@@ -1,12 +1,9 @@
 package com.fiap.ms.login.infrastructure.dataproviders.database.implementations;
 
-import com.fiap.ms.login.infrastructure.dataproviders.database.entities.JpaAddressEntity;
 import com.fiap.ms.login.infrastructure.dataproviders.database.entities.JpaUserEntity;
 import com.fiap.ms.login.application.gateways.JpaUserRepositoryGateway;
-import com.fiap.ms.login.domain.model.Address;
 import com.fiap.ms.login.domain.model.User;
 import com.fiap.ms.login.domain.model.UserRepository;
-import com.fiap.ms.login.entrypoint.controllers.mappers.AddressMapper;
 import com.fiap.ms.login.entrypoint.controllers.mappers.UserMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
@@ -51,25 +48,6 @@ public class UserRepositoryImpl implements UserRepository {
         userEntity.setUsername(user.getUsername());
         userEntity.setPassword(user.getPassword());
         userEntity.setRole(user.getRole());
-
-        // Update address fields
-        if(user.getAddress() != null) {
-            JpaAddressEntity addressEntity = userEntity.getAddress();
-            Address domainAddress = user.getAddress();
-
-            if (addressEntity == null) {
-                // User had no address, create new:
-                addressEntity = AddressMapper.domainToEntity(domainAddress, userEntity);
-                userEntity.setAddress(addressEntity);
-            } else {
-                // User already has address, update fields:
-                addressEntity.setStreet(domainAddress.getStreet());
-                addressEntity.setNumber(domainAddress.getNumber());
-                addressEntity.setComplement(domainAddress.getComplement());
-                addressEntity.setCity(domainAddress.getCity());
-                addressEntity.setState(domainAddress.getState());
-            }
-        }
 
         JpaUserEntity savedUser = jpaUserRepositoryGateway.save(userEntity);
         return UserMapper.entityToDomain(savedUser);

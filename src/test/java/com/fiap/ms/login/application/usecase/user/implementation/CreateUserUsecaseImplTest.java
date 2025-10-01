@@ -1,7 +1,6 @@
 package com.fiap.ms.login.application.usecase.user.implementation;
 
 import com.fiap.ms.login.application.gateways.PasswordEncoderGateway;
-import com.fiap.ms.login.domain.model.Address;
 import com.fiap.ms.login.domain.model.Role;
 import com.fiap.ms.login.domain.model.User;
 import com.fiap.ms.login.domain.model.UserRepository;
@@ -39,18 +38,16 @@ class CreateUserUsecaseImplTest {
 
     private User regularUser;
     private User adminUser;
-    private Address address;
 
     @BeforeEach
     void setUp() {
         LocalDateTime now = LocalDateTime.now();
-        address = new Address(1L, "Test Street", "123", "Apt 4", "Test City", "TS");
 
         regularUser = new User(1L, "Regular User", "regular@example.com", "regularuser", 
-                "password", Role.USER, now, now, address);
+                "password", Role.PACIENTE, now, now);
 
         adminUser = new User(2L, "Admin User", "admin@example.com", "adminuser", 
-                "password", Role.ADMIN, now, now, address);
+                "password", Role.ADMIN, now, now);
     }
 
     @Test

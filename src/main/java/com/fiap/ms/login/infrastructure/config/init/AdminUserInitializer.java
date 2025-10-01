@@ -1,7 +1,6 @@
 package com.fiap.ms.login.infrastructure.config.init;
 
 import com.fiap.ms.login.application.gateways.PasswordEncoderGateway;
-import com.fiap.ms.login.domain.model.Address;
 import com.fiap.ms.login.domain.model.Role;
 import com.fiap.ms.login.domain.model.User;
 import com.fiap.ms.login.domain.model.UserRepository;
@@ -38,16 +37,7 @@ public class AdminUserInitializer {
                     "admin@admin.com",
                     "admin",
                     passwordEncoderGateway.encode(adminPassword),
-                    Role.ADMIN,
-                    new Address(
-                            null,
-                            "Baker Street",
-                            "1337",
-                            "nil",
-                            "London",
-                            "GL"
-
-                    )
+                    Role.ADMIN
             );
 
             userRepository.save(adminUser);

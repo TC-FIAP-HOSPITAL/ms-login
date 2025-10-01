@@ -29,9 +29,9 @@ public class CreateUserUsecaseImpl implements CreateUserUsecase {
 
     public User createUser(User user) {
         boolean isAdmin = securityUtil.isAdmin();
-        boolean roleAdmin = user.getRole().equals(Role.ADMIN);
+        Role roleUser = user.getRole();
 
-        if (roleAdmin && !isAdmin) {
+        if (roleUser != Role.PACIENTE && !isAdmin) {
             throw new AccessDeniedException(null);
         }
 

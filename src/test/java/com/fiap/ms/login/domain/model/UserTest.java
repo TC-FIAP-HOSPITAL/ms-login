@@ -18,7 +18,6 @@ class UserTest {
         assertNull(user.getUsername());
         assertNull(user.getPassword());
         assertNull(user.getRole());
-        assertNull(user.getAddress());
         assertNull(user.getCreatedAt());
         assertNull(user.getUpdatedAt());
     }
@@ -30,10 +29,9 @@ class UserTest {
         String email = "test@example.com";
         String username = "testuser";
         String password = "password123";
-        Role role = Role.USER;
-        Address address = new Address();
+        Role role = Role.PACIENTE;
 
-        User user = new User(id, name, email, username, password, role, address);
+        User user = new User(id, name, email, username, password, role);
 
         assertEquals(id, user.getId());
         assertEquals(name, user.getName());
@@ -41,7 +39,6 @@ class UserTest {
         assertEquals(username, user.getUsername());
         assertEquals(password, user.getPassword());
         assertEquals(role, user.getRole());
-        assertEquals(address, user.getAddress());
     }
 
     @Test
@@ -54,9 +51,8 @@ class UserTest {
         Role role = Role.ADMIN;
         LocalDateTime createdAt = LocalDateTime.now();
         LocalDateTime updatedAt = LocalDateTime.now();
-        Address address = new Address();
 
-        User user = new User(id, name, email, username, password, role, createdAt, updatedAt, address);
+        User user = new User(id, name, email, username, password, role, createdAt, updatedAt);
 
         assertEquals(id, user.getId());
         assertEquals(name, user.getName());
@@ -66,7 +62,6 @@ class UserTest {
         assertEquals(role, user.getRole());
         assertEquals(createdAt, user.getCreatedAt());
         assertEquals(updatedAt, user.getUpdatedAt());
-        assertEquals(address, user.getAddress());
     }
 
     @Test
@@ -80,8 +75,6 @@ class UserTest {
         Role role = Role.ADMIN;
         LocalDateTime createdAt = LocalDateTime.now();
         LocalDateTime updatedAt = LocalDateTime.now();
-        Address address = new Address();
-
         user.setId(id);
         user.setName(name);
         user.setEmail(email);
@@ -90,7 +83,6 @@ class UserTest {
         user.setRole(role);
         user.setCreatedAt(createdAt);
         user.setUpdatedAt(updatedAt);
-        user.setAddress(address);
 
         assertEquals(id, user.getId());
         assertEquals(name, user.getName());
@@ -100,6 +92,5 @@ class UserTest {
         assertEquals(role, user.getRole());
         assertEquals(createdAt, user.getCreatedAt());
         assertEquals(updatedAt, user.getUpdatedAt());
-        assertEquals(address, user.getAddress());
     }
 }

@@ -9,7 +9,6 @@ public record UserDtoResponse(
         String username,
         String role,
         LocalDateTime createdAt,
-        LocalDateTime modifiedAt,
-        AddressDto address
+        LocalDateTime modifiedAt
 ) {
 }

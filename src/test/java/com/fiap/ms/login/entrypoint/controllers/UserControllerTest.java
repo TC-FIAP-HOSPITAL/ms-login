@@ -5,10 +5,8 @@ import com.fiap.ms.login.application.usecase.user.DeleteUserUsecase;
 import com.fiap.ms.login.application.usecase.user.GetUserByIdUsecase;
 import com.fiap.ms.login.application.usecase.user.GetUsersUsecase;
 import com.fiap.ms.login.application.usecase.user.UpdateUserUsecase;
-import com.fiap.ms.login.domain.model.Address;
 import com.fiap.ms.login.domain.model.Role;
 import com.fiap.ms.login.domain.model.User;
-import com.fiap.ms.login.entrypoint.controllers.dto.AddressDto;
 import com.fiap.ms.login.entrypoint.controllers.dto.UserDtoRequest;
 import com.fiap.ms.login.entrypoint.controllers.dto.UserDtoResponse;
 import com.fiap.ms.login.application.usecase.user.exceptions.UserNotFoundException;
@@ -56,20 +54,14 @@ class UserControllerTest {
     private User user1;
     private User user2;
     private UserDtoRequest userDtoRequest;
-    private AddressDto addressDto;
 
     @BeforeEach
     void setUp() {
         LocalDateTime now = LocalDateTime.now();
 
-        Address address1 = new Address(1L, "Test Street", "123", "Apt 4", "Test City", "TS");
-        user1 = new User(1L, "Test User 1", "test1@example.com", "testuser1", "password", Role.USER, now, now, address1);
-
-        Address address2 = new Address(2L, "Other Street", "456", "Apt 7", "Other City", "OS");
-        user2 = new User(2L, "Test User 2", "test2@example.com", "testuser2", "password", Role.USER, now, now, address2);
-
-        addressDto = new AddressDto("1", "Test Street", "123", "Apt 4", "Test City", "TS");
-        userDtoRequest = new UserDtoRequest("1", "Test User 1", "test1@example.com", "testuser1", "password", "USER", addressDto);
+        user1 = new User(1L, "Test User 1", "test1@example.com", "testuser1", "password", Role.PACIENTE, now, now);
+        user2 = new User(2L, "Test User 2", "test2@example.com", "testuser2", "password", Role.PACIENTE, now, now);
+        userDtoRequest = new UserDtoRequest("1", "Test User 1", "test1@example.com", "testuser1", "password", "PACIENTE");
     }
 
     @Test
@@ -98,7 +90,7 @@ class UserControllerTest {
         assertEquals("Test User 1", response.getBody().name());
         assertEquals("test1@example.com", response.getBody().email());
         assertEquals("testuser1", response.getBody().username());
-        assertEquals("USER", response.getBody().role());
+        assertEquals("PACIENTE", response.getBody().role());
     }
 
     @Test
@@ -119,7 +111,7 @@ class UserControllerTest {
         assertEquals("Test User 1", response.getBody().name());
         assertEquals("test1@example.com", response.getBody().email());
         assertEquals("testuser1", response.getBody().username());
-        assertEquals("USER", response.getBody().role());
+        assertEquals("PACIENTE", response.getBody().role());
     }
 
     @Test
@@ -133,7 +125,7 @@ class UserControllerTest {
         assertEquals("Test User 1", response.getBody().name());
         assertEquals("test1@example.com", response.getBody().email());
         assertEquals("testuser1", response.getBody().username());
-        assertEquals("USER", response.getBody().role());
+        assertEquals("PACIENTE", response.getBody().role());
     }
 
     @Test

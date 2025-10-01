@@ -126,7 +126,7 @@ class SecurityUtilTest {
     @Test
     void isAdmin_withNonAdminUser_shouldReturnFalse() {
         // Arrange
-        SimpleGrantedAuthority userAuthority = new SimpleGrantedAuthority(Role.USER.toAuthority());
+        SimpleGrantedAuthority userAuthority = new SimpleGrantedAuthority(Role.PACIENTE.toAuthority());
         Authentication userAuth = new UsernamePasswordAuthenticationToken(
                 "user", "password", Collections.singletonList(userAuthority));
         when(securityContext.getAuthentication()).thenReturn(userAuth);

@@ -1,7 +1,10 @@
 package com.fiap.ms.login.infrastructure.config.security;
 
 import com.fiap.ms.login.domain.model.Role;
+import java.util.Collection;
+import java.util.Optional;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +28,20 @@ public class SecurityUtil {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals(Role.ADMIN.toAuthority()));
+    }
+
+    public Role getRole() {
+      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+      if (auth == null || auth.getAuthorities() == null) {
+        return Role.PACIENTE;
+      }
+
+      return auth.getAuthorities()
+          .stream()
+          .map(GrantedAuthority::getAuthority) // e.g. "ROLE_ADMIN"
+          .map(Role::fromAuthority)            // -> Role.ADMIN
+          .findFirst().orElse(Role.PACIENTE);
     }
 
     public Long getUserId() {

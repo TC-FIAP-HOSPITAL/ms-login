@@ -72,7 +72,7 @@ public class UserController {
         return user.map(value -> ResponseEntity.ok().body(UserMapper.domainToDto(value))).orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
-    @Operation(summary = "Create a new user. Can only create CUSTOMER role. Admin can create any role.", description = "Creates a new user.")
+    @Operation(summary = "Create a new user. Can only create PATIENT role. Admin can create any role.", description = "Creates a new user.")
     @ApiResponse(responseCode = "201", description = "User created successfully")
     @PostMapping
     public ResponseEntity<UserDtoResponse> createUser(@RequestBody UserDtoRequest userDTORequest) {
