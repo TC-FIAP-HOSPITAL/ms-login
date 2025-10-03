@@ -1,16 +1,19 @@
 package com.fiap.ms.login.infrastructure.config.security;
 
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import com.fiap.ms.login.domain.model.Role;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import java.security.Key;
-import java.util.Date;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import java.nio.charset.StandardCharsets;
 
 @Component
 public class JwtUtil {
@@ -23,12 +26,13 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String username, String userId) {
+    public String generateToken(String username, String userId, Role role) {
         Date now = new Date();
         Date expiry = new Date(System.currentTimeMillis() + EXPIRATION);
         return Jwts.builder()
                 .setSubject(username)
                 .claim("userId", userId)
+                .claim("role", role)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -48,7 +52,8 @@ public class JwtUtil {
     }
 
     public Role extractRole(Claims claims) {
-        return claims.get("role", Role.class);
+        String roleStr = claims.get("role", String.class);
+        return Role.valueOf(roleStr);
     }
 
     public String extractUserId(Claims claims) {

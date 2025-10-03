@@ -1,11 +1,18 @@
 package com.fiap.ms.login.infrastructure.dataproviders.database.implementations;
 
-import com.fiap.ms.login.application.gateways.JpaUserRepositoryGateway;
-import com.fiap.ms.login.domain.model.Role;
-import com.fiap.ms.login.domain.model.User;
-import com.fiap.ms.login.infrastructure.dataproviders.database.entities.JpaUserEntity;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityNotFoundException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 import org.hibernate.Filter;
 import org.hibernate.Session;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,13 +27,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import com.fiap.ms.login.application.gateways.JpaUserRepositoryGateway;
+import com.fiap.ms.login.domain.model.Role;
+import com.fiap.ms.login.domain.model.User;
+import com.fiap.ms.login.infrastructure.dataproviders.database.entities.JpaUserEntity;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -47,6 +54,14 @@ class UserRepositoryImplTest {
     @InjectMocks
     private UserRepositoryImpl userRepository;
 
+    @BeforeEach
+    void setUp() {
+        userRepository = new UserRepositoryImpl(jpaUserRepositoryGateway, entityManager);
+        // Setup common mocks for Session and Filter operations
+        when(entityManager.unwrap(any(Class.class))).thenReturn(session);
+        when(session.enableFilter("deletedFilter")).thenReturn(filter);
+        when(filter.setParameter("isDeleted", false)).thenReturn(filter);
+    }
 
     @Test
     void save_shouldSaveUser() {
@@ -66,7 +81,7 @@ class UserRepositoryImplTest {
         Long userId = 1L;
         JpaUserEntity entity = new JpaUserEntity();
         entity.setId(userId);
-        
+
         when(jpaUserRepositoryGateway.findById(userId)).thenReturn(Optional.of(entity));
         when(jpaUserRepositoryGateway.save(entity)).thenReturn(entity);
 
@@ -82,11 +97,11 @@ class UserRepositoryImplTest {
         user.setId(1L);
         user.setName("Updated User");
         user.setEmail("updated@test.com");
-        
+
         JpaUserEntity existingEntity = new JpaUserEntity();
         existingEntity.setId(1L);
         existingEntity.setName("Old Name");
-        
+
         when(jpaUserRepositoryGateway.findById(1L)).thenReturn(Optional.of(existingEntity));
         when(jpaUserRepositoryGateway.save(any(JpaUserEntity.class))).thenReturn(existingEntity);
 
@@ -101,7 +116,7 @@ class UserRepositoryImplTest {
     void update_shouldThrowExceptionWhenUserNotFound() {
         User user = new User();
         user.setId(1L);
-        
+
         when(jpaUserRepositoryGateway.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> userRepository.update(user));
@@ -118,7 +133,7 @@ class UserRepositoryImplTest {
         entity1.setRole(Role.PACIENTE);
         entity1.setCreatedAt(LocalDateTime.now());
         entity1.setUpdatedAt(LocalDateTime.now());
-        
+
         JpaUserEntity entity2 = new JpaUserEntity();
         entity2.setId(2L);
         entity2.setName("User 2");
@@ -128,12 +143,9 @@ class UserRepositoryImplTest {
         entity2.setRole(Role.PACIENTE);
         entity2.setCreatedAt(LocalDateTime.now());
         entity2.setUpdatedAt(LocalDateTime.now());
-        
+
         Page<JpaUserEntity> page = new PageImpl<>(Arrays.asList(entity1, entity2));
-        
-        when(entityManager.unwrap(Session.class)).thenReturn(session);
-        when(session.enableFilter("deletedFilter")).thenReturn(filter);
-        when(filter.setParameter("isDeleted", false)).thenReturn(filter);
+
         when(jpaUserRepositoryGateway.findAll(any(PageRequest.class))).thenReturn(page);
 
         List<User> result = userRepository.findAllUsers(0, 10);
@@ -156,10 +168,7 @@ class UserRepositoryImplTest {
         entity.setRole(Role.PACIENTE);
         entity.setCreatedAt(LocalDateTime.now());
         entity.setUpdatedAt(LocalDateTime.now());
-        
-        when(entityManager.unwrap(Session.class)).thenReturn(session);
-        when(session.enableFilter("deletedFilter")).thenReturn(filter);
-        when(filter.setParameter("isDeleted", false)).thenReturn(filter);
+
         when(jpaUserRepositoryGateway.findById(userId)).thenReturn(Optional.of(entity));
 
         Optional<User> result = userRepository.findById(userId);
@@ -168,6 +177,7 @@ class UserRepositoryImplTest {
         assertEquals("Test User", result.get().getName());
         verify(entityManager).unwrap(Session.class);
         verify(session).enableFilter("deletedFilter");
+        verify(filter).setParameter("isDeleted", false);
     }
 
     @Test
@@ -182,10 +192,7 @@ class UserRepositoryImplTest {
         entity.setRole(Role.PACIENTE);
         entity.setCreatedAt(LocalDateTime.now());
         entity.setUpdatedAt(LocalDateTime.now());
-        
-        when(entityManager.unwrap(Session.class)).thenReturn(session);
-        when(session.enableFilter("deletedFilter")).thenReturn(filter);
-        when(filter.setParameter("isDeleted", false)).thenReturn(filter);
+
         when(jpaUserRepositoryGateway.findByUsername(username)).thenReturn(Optional.of(entity));
 
         Optional<User> result = userRepository.findByUsername(username);

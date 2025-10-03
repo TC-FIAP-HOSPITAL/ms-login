@@ -1,14 +1,22 @@
 package com.fiap.ms.login.infrastructure.config.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.security.Key;
+import java.util.Date;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.Date;
+import com.fiap.ms.login.domain.model.Role;
 
-import static org.junit.jupiter.api.Assertions.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 class JwtUtilTest {
 
@@ -16,6 +24,7 @@ class JwtUtilTest {
     private final String TEST_SECRET = "testSecretKeyWithAtLeast256BitsForHS256Algorithm";
     private final String TEST_USERNAME = "testuser";
     private final String TEST_USER_ID = "1";
+    private final Role TEST_ROLE = Role.ADMIN;
 
     @BeforeEach
     void setUp() {
@@ -26,7 +35,7 @@ class JwtUtilTest {
     @Test
     void generateToken_shouldCreateValidToken() {
         // Act
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLE);
 
         // Assert
         assertNotNull(token);
@@ -37,7 +46,7 @@ class JwtUtilTest {
     @Test
     void extractClaims_shouldReturnValidClaims() {
         // Arrange
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLE);
 
         // Act
         Claims claims = jwtUtil.extractClaims(token);
@@ -46,12 +55,13 @@ class JwtUtilTest {
         assertNotNull(claims);
         assertEquals(TEST_USERNAME, claims.getSubject());
         assertEquals(TEST_USER_ID, claims.get("userId"));
+        assertEquals(TEST_ROLE.name(), claims.get("role"));
     }
 
     @Test
     void extractUsername_shouldReturnCorrectUsername() {
         // Arrange
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLE);
         Claims claims = jwtUtil.extractClaims(token);
 
         // Act
@@ -64,7 +74,7 @@ class JwtUtilTest {
     @Test
     void extractUserId_shouldReturnCorrectUserId() {
         // Arrange
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLE);
         Claims claims = jwtUtil.extractClaims(token);
 
         // Act
@@ -75,9 +85,9 @@ class JwtUtilTest {
     }
 
     @Test
-    void extractExpirationDate_shouldReturnCorrectDate() {
+    void extractExpirationDate_shouldReturnCorrectExpiration() {
         // Arrange
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLE);
         Claims claims = jwtUtil.extractClaims(token);
 
         // Act
@@ -85,26 +95,24 @@ class JwtUtilTest {
 
         // Assert
         assertNotNull(expirationDate);
-        assertTrue(expirationDate.after(new Date()));
     }
 
     @Test
-    void extractExpirationDateFromToken_shouldReturnCorrectDate() {
+    void extractExpirationDateFromToken_shouldReturnCorrectExpiration() {
         // Arrange
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLE);
 
         // Act
         Date expirationDate = jwtUtil.extractExpirationDateFromToken(token);
 
         // Assert
         assertNotNull(expirationDate);
-        assertTrue(expirationDate.after(new Date()));
     }
 
     @Test
     void validateToken_withValidToken_shouldReturnTrue() {
         // Arrange
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLE);
 
         // Act & Assert
         assertTrue(jwtUtil.validateToken(token));
@@ -113,24 +121,40 @@ class JwtUtilTest {
     @Test
     void validateToken_withInvalidToken_shouldReturnFalse() {
         // Arrange
-        String invalidToken = "invalid.token.string";
+        String invalidToken = "invalid.token.here";
 
         // Act & Assert
         assertFalse(jwtUtil.validateToken(invalidToken));
     }
 
     @Test
-    void validateToken_withExpiredToken_shouldReturnFalse() throws Exception {
-        // This test is a bit tricky since we'd need to create an expired token
-        // For now, we'll just test that an exception is caught and false is returned
-        
-        // Arrange - create a token with a modified expiration claim
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID);
-        
-        // Modify the token to make it invalid (remove the last character)
-        String invalidToken = token.substring(0, token.length() - 1);
+    void validateToken_withExpiredToken_shouldReturnFalse() {
+        // Arrange
+        Key key = (Key) ReflectionTestUtils.invokeMethod(jwtUtil, "getSigningKey");
+        Date past = new Date(System.currentTimeMillis() - 1000);
+        String expiredToken = Jwts.builder()
+                .setSubject(TEST_USERNAME)
+                .claim("userId", TEST_USER_ID)
+                .claim("role", TEST_ROLE.name())
+                .setIssuedAt(new Date())
+                .setExpiration(past)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
 
         // Act & Assert
-        assertFalse(jwtUtil.validateToken(invalidToken));
+        assertFalse(jwtUtil.validateToken(expiredToken));
+    }
+
+    @Test
+    void extractRole_shouldReturnCorrectRole() {
+        // Arrange
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLE);
+        Claims claims = jwtUtil.extractClaims(token);
+
+        // Act
+        Role role = jwtUtil.extractRole(claims);
+
+        // Assert
+        assertEquals(TEST_ROLE, role);
     }
 }

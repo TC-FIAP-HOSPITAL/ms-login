@@ -94,7 +94,7 @@ The backend is developed in **Spring Boot**, follows **SOLID** principles, and u
     - <b>GlobalExceptionHandler</b> - Handles and maps exceptions to HTTP responses
 
 - <b>application/usecase/user/exceptions:</b>
-    - <b>UserAlreadyExistsException, UserNotFoundException</b> - Specific domain exceptions
+    - <b>UserAlreadyExistsException, UserNotFoundException, UserHasException</b> - Specific domain exceptions for user operations
 
 - <b>entrypoint/controllers/mappers:</b>
     - <b>UserMapper</b> - Maps between User/UserDto and entity/domain
@@ -276,8 +276,84 @@ ms-login/
     │       ├── application-postgres.properties
     │       ├── static/
     │       └── templates/
-    └── test/java/com/fiap/ms/login/
+    └── test/
+        └── java/com/fiap/ms/login/
+            ├── application/
+            │   └── usecase/
+            │       └── user/
+            │           ├── exceptions/
+            │           │   └── UserExceptionsTest.java
+            │           └── implementation/
+            │               ├── CreateUserUsecaseImplTest.java
+            │               ├── DeleteUserUsecaseImplTest.java
+            │               ├── GetUserByIdUsecaseImplTest.java
+            │               ├── GetUsersUsecaseImplTest.java
+            │               └── UpdateUserUsecaseImplTest.java
+            ├── domain/
+            │   └── model/
+            │       ├── RoleTest.java
+            │       └── UserTest.java
+            ├── entrypoint/
+            │   └── controllers/
+            │       ├── UserControllerTest.java
+            │       ├── handler/
+            │       │   └── GlobalExceptionHandlerTest.java
+            │       └── mappers/
+            │           └── UserMapperTest.java
+            ├── infrastructure/
+            │   ├── config/
+            │   │   └── security/
+            │   │       ├── MyUserDetailsServiceTest.java
+            │   │       └── SecurityUtilTest.java
+            │   ├── dataproviders/
+            │   │   └── database/
+            │   │       ├── entities/
+            │   │       │   └── JpaUserEntityTest.java
+            │   │       └── implementations/
+            │   │           └── UserRepositoryImplTest.java
+            │   ├── http/
+            │   │   └── HttpClientTest.java
+            │   └── password/
+            │       └── BcryptPasswordEncoderImplTest.java
+            └── MsLoginApplicationTests.java
 ```
+
+---
+
+## 🧪 Testing & Quality Assurance
+
+This project maintains high code quality standards through comprehensive testing:
+
+### Test Coverage
+- **Comprehensive Unit Tests**: All domain models, use cases, controllers, and infrastructure components are thoroughly tested
+- **Entity Testing**: Complete coverage of JPA entities including constructors, getters, setters, equals, hashCode, and toString methods
+- **Exception Testing**: Full testing of custom exception classes ensuring proper inheritance and message handling
+- **Integration Testing**: Controller endpoints tested with proper authentication and authorization scenarios
+- **Repository Testing**: Database layer testing with mock setups for complex Hibernate operations
+
+### Test Organization
+- **Clean Architecture Testing**: Tests are organized following the same clean architecture principles as the main code
+- **Isolated Unit Tests**: Each component is tested in isolation using mocking frameworks
+- **Comprehensive Coverage**: Tests cover both happy path and error scenarios
+- **Authentication Testing**: Security aspects are thoroughly tested including JWT token handling
+
+### Running Tests
+```bash
+# Run all tests
+./gradlew test
+
+# Generate coverage report
+./gradlew jacocoTestReport
+
+# View coverage report
+open build/reports/jacoco/test/html/index.html
+```
+
+### Quality Tools
+- **JaCoCo**: Code coverage analysis and reporting
+- **Mockito**: Mocking framework for unit tests
+- **JUnit 5**: Testing framework with comprehensive assertion library
+- **Spring Boot Test**: Integration testing support
 
 ---
 

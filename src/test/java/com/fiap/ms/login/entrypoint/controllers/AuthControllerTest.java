@@ -1,8 +1,15 @@
 package com.fiap.ms.login.entrypoint.controllers;
 
-import com.fiap.ms.login.infrastructure.config.security.JwtUtil;
-import com.fiap.ms.login.infrastructure.config.security.MyUserDetails;
-import io.jsonwebtoken.Claims;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Date;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,15 +19,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.Date;
+import com.fiap.ms.login.domain.model.Role;
+import com.fiap.ms.login.infrastructure.config.security.JwtUtil;
+import com.fiap.ms.login.infrastructure.config.security.MyUserDetails;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import io.jsonwebtoken.Claims;
 
 @ExtendWith(MockitoExtension.class)
 class AuthControllerTest {
@@ -46,6 +51,8 @@ class AuthControllerTest {
 
         userDetails = mock(MyUserDetails.class);
         when(userDetails.getUserId()).thenReturn(1L);
+        when(userDetails.getAuthorities())
+                .thenAnswer(invocation -> Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
         when(authentication.getPrincipal()).thenReturn(userDetails);
 
         claims = mock(Claims.class);
@@ -59,7 +66,7 @@ class AuthControllerTest {
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
-        when(jwtUtil.generateToken(anyString(), anyString())).thenReturn("test-token");
+        when(jwtUtil.generateToken(anyString(), anyString(), any(Role.class))).thenReturn("test-token");
         when(jwtUtil.extractClaims(anyString())).thenReturn(claims);
         when(jwtUtil.extractExpirationDate(claims)).thenReturn(expirationDate);
         when(jwtUtil.extractUserId(claims)).thenReturn("1");
