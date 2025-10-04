@@ -4,10 +4,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
+import com.fiap.ms.login.domain.enums.RoleEnum;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import com.fiap.ms.login.domain.model.Role;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -26,13 +25,13 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String username, String userId, Role role) {
+    public String generateToken(String username, String userId, RoleEnum roleEnum) {
         Date now = new Date();
         Date expiry = new Date(System.currentTimeMillis() + EXPIRATION);
         return Jwts.builder()
                 .setSubject(username)
                 .claim("userId", userId)
-                .claim("role", role)
+                .claim("role", roleEnum)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -51,9 +50,9 @@ public class JwtUtil {
         return claims.getSubject();
     }
 
-    public Role extractRole(Claims claims) {
+    public RoleEnum extractRole(Claims claims) {
         String roleStr = claims.get("role", String.class);
-        return Role.valueOf(roleStr);
+        return RoleEnum.valueOf(roleStr);
     }
 
     public String extractUserId(Claims claims) {

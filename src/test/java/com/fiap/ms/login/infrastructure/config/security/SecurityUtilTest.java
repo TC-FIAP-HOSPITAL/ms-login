@@ -1,6 +1,6 @@
 package com.fiap.ms.login.infrastructure.config.security;
 
-import com.fiap.ms.login.domain.model.Role;
+import com.fiap.ms.login.domain.enums.RoleEnum;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -111,7 +111,7 @@ class SecurityUtilTest {
     @Test
     void isAdmin_withAdminUser_shouldReturnTrue() {
         // Arrange
-        SimpleGrantedAuthority adminAuthority = new SimpleGrantedAuthority(Role.ADMIN.toAuthority());
+        SimpleGrantedAuthority adminAuthority = new SimpleGrantedAuthority(RoleEnum.ADMIN.toAuthority());
         Authentication adminAuth = new UsernamePasswordAuthenticationToken(
                 "admin", "password", Collections.singletonList(adminAuthority));
         when(securityContext.getAuthentication()).thenReturn(adminAuth);
@@ -126,7 +126,7 @@ class SecurityUtilTest {
     @Test
     void isAdmin_withNonAdminUser_shouldReturnFalse() {
         // Arrange
-        SimpleGrantedAuthority userAuthority = new SimpleGrantedAuthority(Role.PACIENTE.toAuthority());
+        SimpleGrantedAuthority userAuthority = new SimpleGrantedAuthority(RoleEnum.PACIENTE.toAuthority());
         Authentication userAuth = new UsernamePasswordAuthenticationToken(
                 "user", "password", Collections.singletonList(userAuthority));
         when(securityContext.getAuthentication()).thenReturn(userAuth);

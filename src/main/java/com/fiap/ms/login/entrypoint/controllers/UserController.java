@@ -5,10 +5,10 @@ import com.fiap.ms.login.application.usecase.user.DeleteUserUsecase;
 import com.fiap.ms.login.application.usecase.user.GetUserByIdUsecase;
 import com.fiap.ms.login.application.usecase.user.GetUsersUsecase;
 import com.fiap.ms.login.application.usecase.user.UpdateUserUsecase;
-import com.fiap.ms.login.domain.model.User;
+import com.fiap.ms.login.domain.model.UserDomain;
 import com.fiap.ms.login.entrypoint.controllers.dto.UserDtoRequest;
 import com.fiap.ms.login.entrypoint.controllers.dto.UserDtoResponse;
-import com.fiap.ms.login.application.usecase.user.exceptions.UserNotFoundException;
+import com.fiap.ms.login.domain.exceptions.UserNotFoundException;
 import com.fiap.ms.login.entrypoint.controllers.mappers.UserMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/v1/users")
 public class UserController {
     private final CreateUserUsecase createUserUsecase;
     private final DeleteUserUsecase deleteUserUsecase;
@@ -57,8 +57,8 @@ public class UserController {
     public ResponseEntity<List<UserDtoResponse>> getUsers(@RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
         page = page == null ? 1 : page;
         size = size == null ? 10 : size;
-        List<User> users = getUsersUsecase.getUsers(page, size);
-        List<UserDtoResponse> usersDtoResponse = users.stream()
+        List<UserDomain> userDomains = getUsersUsecase.getUsers(page, size);
+        List<UserDtoResponse> usersDtoResponse = userDomains.stream()
                 .map(UserMapper::domainToDto)
                 .toList();
         return ResponseEntity.ok().body(usersDtoResponse);
@@ -68,7 +68,7 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "User retrieved successfully")
     @GetMapping("/{user_id}")
     public ResponseEntity<UserDtoResponse> getUser(@PathVariable("user_id") String id) {
-        Optional<User> user = getUserByIdUsecase.getUserById(id);
+        Optional<UserDomain> user = getUserByIdUsecase.getUserById(id);
         return user.map(value -> ResponseEntity.ok().body(UserMapper.domainToDto(value))).orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
@@ -76,9 +76,9 @@ public class UserController {
     @ApiResponse(responseCode = "201", description = "User created successfully")
     @PostMapping
     public ResponseEntity<UserDtoResponse> createUser(@RequestBody UserDtoRequest userDTORequest) {
-        User user = UserMapper.dtoToDomain(userDTORequest);
-        User createdUser = createUserUsecase.createUser(user);
-        UserDtoResponse userDtoResponse = UserMapper.domainToDto(createdUser);
+        UserDomain userDomain = UserMapper.dtoToDomain(userDTORequest);
+        UserDomain createdUserDomain = createUserUsecase.createUser(userDomain);
+        UserDtoResponse userDtoResponse = UserMapper.domainToDto(createdUserDomain);
         return ResponseEntity.status(HttpStatus.CREATED).body(userDtoResponse);
     }
 
@@ -86,9 +86,9 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "User updated successfully")
     @PutMapping
     public ResponseEntity<UserDtoResponse> updateUser(@RequestBody UserDtoRequest userDtoRequest) {
-        User user = UserMapper.dtoToDomain(userDtoRequest);
-        User updatedUser = updateUserUsecase.updateUser(user);
-        UserDtoResponse userDtoResponse = UserMapper.domainToDto(updatedUser);
+        UserDomain userDomain = UserMapper.dtoToDomain(userDtoRequest);
+        UserDomain updatedUserDomain = updateUserUsecase.updateUser(userDomain);
+        UserDtoResponse userDtoResponse = UserMapper.domainToDto(updatedUserDomain);
         return ResponseEntity.ok().body(userDtoResponse);
     }
 

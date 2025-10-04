@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UpdateUserUsecaseImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ms-login</a> &gt; <a href="index.source.html" class="el_package">com.fiap.ms.login.application.usecase.user.implementation</a> &gt; <span class="el_source">UpdateUserUsecaseImpl.java</span></div><h1>UpdateUserUsecaseImpl.java</h1><pre class="source lang-java linenums">package com.fiap.ms.login.application.usecase.user.implementation;
+
+import com.fiap.ms.login.application.gateways.PasswordEncoder;
+import com.fiap.ms.login.application.gateways.User;
+import com.fiap.ms.login.application.usecase.user.UpdateUserUsecase;
+import com.fiap.ms.login.domain.enums.RoleEnum;
+import com.fiap.ms.login.domain.model.UserDomain;
+import com.fiap.ms.login.infrastructure.config.security.SecurityUtil;
+import org.springframework.security.access.AccessDeniedException;
+
+public class UpdateUserUsecaseImpl implements UpdateUserUsecase {
+
+    private final User user;
+    private final PasswordEncoder passwordEncoder;
+    private final SecurityUtil securityUtil;
+
+    public UpdateUserUsecaseImpl(
+            User user,
+            PasswordEncoder passwordEncoder,
+            SecurityUtil securityUtil
+<span class="fc" id="L21">    ) {</span>
+<span class="fc" id="L22">        this.user = user;</span>
+<span class="fc" id="L23">        this.passwordEncoder = passwordEncoder;</span>
+<span class="fc" id="L24">        this.securityUtil = securityUtil;</span>
+<span class="fc" id="L25">    }</span>
+
+    @Override
+    public UserDomain updateUser(UserDomain userDomain) {
+<span class="fc" id="L29">        Long currentUserId = securityUtil.getUserId();</span>
+<span class="fc" id="L30">        boolean isAdmin = securityUtil.isAdmin();</span>
+<span class="fc" id="L31">        RoleEnum currentUserRoleEnum = securityUtil.getRole();</span>
+
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if (!isAdmin) {</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">            boolean notSameUser = !userDomain.getId().equals(currentUserId);</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">            boolean roleChanged = !userDomain.getRole().equals(currentUserRoleEnum);</span>
+
+<span class="pc bpc" id="L37" title="1 of 4 branches missed.">            if (notSameUser || roleChanged) {</span>
+<span class="fc" id="L38">                throw new AccessDeniedException(&quot;Not allowed to update this user&quot;);</span>
+          }
+        }
+
+<span class="fc" id="L42">        userDomain.setPassword(passwordEncoder.encode(userDomain.getPassword()));</span>
+<span class="fc" id="L43">        return user.update(userDomain);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

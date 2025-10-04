@@ -1,6 +1,6 @@
 package com.fiap.ms.login.entrypoint.controllers.handler;
 
-import com.fiap.ms.login.application.usecase.user.exceptions.UserNotFoundException;
+import com.fiap.ms.login.domain.exceptions.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

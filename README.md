@@ -11,13 +11,13 @@
 The **Tech Challenge** is a hands-on project from FIAP’s postgraduate course in Java Architecture and Development, aiming to create a restaurant management system, developed in phases.
 
 > **Main goal:**
-> This microservice handles user authentication and management for the MS-Login system, allowing secure access to the platform for restaurants and customers.
+> This microservice handles userDomain authentication and management for the MS-Login system, allowing secure access to the platform for restaurants and customers.
 
 ---
 
 ## Microservice Objective
 
-Develop a robust and complete login microservice using **Spring Boot**, focused on user management. The implemented operations include:
+Develop a robust and complete login microservice using **Spring Boot**, focused on userDomain management. The implemented operations include:
 
 - User creation
 - User data updating
@@ -47,9 +47,9 @@ The microservice is Docker-ready, uses Docker Compose for orchestration, and is 
         - City (`String`)
         - State (`String`)
 
-- **Password change**: Users can change their passwordEncoderGateway.
-- **Login validation**: Checks user credentials.
-- **User deletion**: Remove registered users.
+- **Password change**: Users can change their passwordEncoder.
+- **Login validation**: Checks userDomain credentials.
+- **User deletion**: Remove registered userDomains.
 
 ### User Roles
 
@@ -72,29 +72,29 @@ The backend is developed in **Spring Boot**, follows **SOLID** principles, and u
 
 - <b>infrastructure/config:</b>
     - <b>swagger/SwaggerConfig</b> - API documentation configuration (Swagger/OpenAPI)
-    - <b>init/AdminUserInitializer</b> - Initializes admin user(s) at startup
+    - <b>init/AdminUserInitializer</b> - Initializes admin userDomain(s) at startup
 
 - <b>entrypoint/controllers:</b>
     - <b>AuthController</b> - Handles POST /login (JWT authentication)
-    - <b>UserController</b> - Handles GET, POST, PUT, DELETE /users endpoints for user management with access control
+    - <b>UserController</b> - Handles GET, POST, PUT, DELETE /userDomains endpoints for userDomain management with access control
 
 - <b>domain/model:</b>
-    - <b>User</b> - Main user domain model/entity
-    - <b>Role</b> - User role enum (ADMIN, CUSTOMER, etc)
-    - <b>Address</b> - Value object/entity for user addresses
-    - <b>UserRepository</b> - Repository interface for user persistence
+    - <b>User</b> - Main userDomain domain model/entity
+    - <b>Role</b> - User roleEnum enum (ADMIN, CUSTOMER, etc)
+    - <b>Address</b> - Value object/entity for userDomain addresses
+    - <b>UserRepository</b> - Repository interface for userDomain persistence
 
 - <b>entrypoint/controllers/dto:</b>
-    - <b>UserDtoRequest</b> - Used for creating/updating a user (client → server)
-    - <b>UserDtoResponse</b> - Used in user API responses (server → client)
+    - <b>UserDtoRequest</b> - Used for creating/updating a userDomain (client → server)
+    - <b>UserDtoResponse</b> - Used in userDomain API responses (server → client)
     - <b>AddressDto</b> - Used as part of the address payload
 
 - <b>entrypoint/controllers/handler:</b>
     - <b>ApiError</b> - Standard API error response body
     - <b>GlobalExceptionHandler</b> - Handles and maps exceptions to HTTP responses
 
-- <b>application/usecase/user/exceptions:</b>
-    - <b>UserAlreadyExistsException, UserNotFoundException, UserHasException</b> - Specific domain exceptions for user operations
+- <b>application/usecase/userDomain/exceptions:</b>
+    - <b>UserAlreadyExistsException, UserNotFoundException, UserHasException</b> - Specific domain exceptions for userDomain operations
 
 - <b>entrypoint/controllers/mappers:</b>
     - <b>UserMapper</b> - Maps between User/UserDto and entity/domain
@@ -117,12 +117,12 @@ The backend is developed in **Spring Boot**, follows **SOLID** principles, and u
     - <b>SecurityConfig</b> - Overall security configuration (roles, HTTP security)
     - <b>JwtAuthenticationFilter</b> - Parses JWT from requests
     - <b>JwtUtil</b> - Signs, validates, and extracts claims from JWTs
-    - <b>MyUserDetails</b> - Custom user principal for Spring Security
-    - <b>MyUserDetailsService</b> - Loads users for authentication
+    - <b>MyUserDetails</b> - Custom userDomain principal for Spring Security
+    - <b>MyUserDetailsService</b> - Loads userDomains for authentication
     - <b>SecurityExceptionHandlerConfig</b> - Security-specific exception handling
     - <b>SecurityUtil</b> - Helper methods for current authentication
 
-- <b>application/usecase/user:</b>
+- <b>application/usecase/userDomain:</b>
     - <b>CreateUserUsecase, GetUsersUsecase, etc.</b> - Use case interfaces
     - <b>implementation/CreateUserUsecaseImpl, etc.</b> - Use case implementations
 
@@ -148,7 +148,7 @@ The backend is developed in **Spring Boot**, follows **SOLID** principles, and u
 
 - **Default Admin User:**
     - `login`: `admin`
-    - `passwordEncoderGateway`: Value from `admin.passwordEncoderGateway` in `application.properties`
+    - `passwordEncoder`: Value from `admin.passwordEncoder` in `application.properties`
 
 - **JWT Secret:**
     - Value from `jwt.secret` in `application.properties`
@@ -211,7 +211,7 @@ ms-login/
     │   │       │   │   ├── JpaUserRepository.java
     │   │       │   │   └── PasswordEncoder.java
     │   │       │   └── usecase/
-    │   │       │       └── user/
+    │   │       │       └── userDomain/
     │   │       │           ├── CreateUserUsecase.java
     │   │       │           ├── DeleteUserUsecase.java
     │   │       │           ├── GetUserByIdUsecase.java
@@ -280,7 +280,7 @@ ms-login/
         └── java/com/fiap/ms/login/
             ├── application/
             │   └── usecase/
-            │       └── user/
+            │       └── userDomain/
             │           ├── exceptions/
             │           │   └── UserExceptionsTest.java
             │           └── implementation/
@@ -366,55 +366,55 @@ open build/reports/jacoco/test/html/index.html
 
 ### User Controller
 
-#### GET /users
+#### GET /userDomains
 
-*   **Summary:** Get all users. <b>Administrators only.</b>
-*   **Description:** Returns a <b>paginated list</b> of all users.
+*   **Summary:** Get all userDomains. <b>Administrators only.</b>
+*   **Description:** Returns a <b>paginated list</b> of all userDomains.
 *   **Operation ID:** `getUsers`
-*   **Tags:** `user-controller`
+*   **Tags:** `userDomain-controller`
 *   **Query Parameters:**
     *   `page` (optional, integer) - Page index, default 0.
     *   `size` (optional, integer) - Page size, default 10.
 *   **Responses:**
     *   `200 OK`: Users retrieved successfully. Returns an array of <b>UserDtoResponse</b> objects.
 
-#### PUT /users
+#### PUT /userDomains
 
-*   **Summary:** Update user content. <b>Only admin can change other users. User can change itself, except for role.</b>
-*   **Description:** Updates user data.
+*   **Summary:** Update userDomain content. <b>Only admin can change other userDomains. User can change itself, except for roleEnum.</b>
+*   **Description:** Updates userDomain data.
 *   **Operation ID:** `updateUser`
-*   **Tags:** `user-controller`
+*   **Tags:** `userDomain-controller`
 *   **Request Body:** `application/json` with schema <b>UserDtoRequest</b>
 *   **Responses:**
     *   `200 OK`: User updated successfully. Returns a <b>UserDtoResponse</b> object.
 
-#### POST /users
+#### POST /userDomains
 
-*   **Summary:** Create a new user.<b> Anyone can create a CUSTOMER user. Admin can create any role.</b>
-*   **Description:** Creates a new user.
+*   **Summary:** Create a new userDomain.<b> Anyone can create a CUSTOMER userDomain. Admin can create any roleEnum.</b>
+*   **Description:** Creates a new userDomain.
 *   **Operation ID:** `createUser`
-*   **Tags:** `user-controller`
+*   **Tags:** `userDomain-controller`
 *   **Request Body:** `application/json` with schema <b>UserDtoRequest</b>
 *   **Responses:**
     *   `201 Created`: User created successfully. Returns a <b>UserDtoResponse</b> object.
 
-#### GET /users/{user_id}
+#### GET /userDomains/{user_id}
 
-*   **Summary:** Get user by ID. <b>User can only get their own data. Admin can get any user.</b>
-*   **Description:** Returns a user by their <b>UUID</b>.
+*   **Summary:** Get userDomain by ID. <b>User can only get their own data. Admin can get any userDomain.</b>
+*   **Description:** Returns a userDomain by their <b>UUID</b>.
 *   **Operation ID:** `getUser`
-*   **Tags:** `user-controller`
+*   **Tags:** `userDomain-controller`
 *   **Parameters:**
     *   `user_id` (path, required): <b>string (UUID)</b>
 *   **Responses:**
     *   `200 OK`: User retrieved successfully. Returns a <b>UserDtoResponse</b> object.
 
-#### DELETE /users/{user_id}
+#### DELETE /userDomains/{user_id}
 
-*   **Summary:** Deletes a user. <b>Only admin can delete other users. User can delete themselves.</b>
-*   **Description:** Soft deletes a user (by unique identifier).
+*   **Summary:** Deletes a userDomain. <b>Only admin can delete other userDomains. User can delete themselves.</b>
+*   **Description:** Soft deletes a userDomain (by unique identifier).
 *   **Operation ID:** `deleteUser`
-*   **Tags:** `user-controller`
+*   **Tags:** `userDomain-controller`
 *   **Parameters:**
     *   `user_id` (path, required): <b>string (UUID)</b>
 *   **Responses:**
@@ -424,7 +424,7 @@ open build/reports/jacoco/test/html/index.html
 
 #### POST /login
 
-*   **Summary:** Logs in a user.
+*   **Summary:** Logs in a userDomain.
 *   **Operation ID:** `login`
 *   **Tags:** `auth-controller`
 *   **Request Body:** `application/json` with schema <b>LoginRequestDTO</b>
@@ -455,7 +455,7 @@ open build/reports/jacoco/test/html/index.html
     "password": {
       "type": "string"
     },
-    "role": {
+    "roleEnum": {
       "type": "string"
     },
     "address": {
@@ -484,7 +484,7 @@ open build/reports/jacoco/test/html/index.html
     "username": {
       "type": "string"
     },
-    "role": {
+    "roleEnum": {
       "type": "string"
     },
     "createdAt": {
@@ -545,14 +545,14 @@ open build/reports/jacoco/test/html/index.html
 
 # 🥡 <b>MS-Login - Postman API Collection Documentation</b>
 
-This API supports typical <b>user management operations</b> (login, create user, update, delete, etc.) for two roles: <code>ADMIN</code> and <code>USER</code>. The list below explains how each call works, what you have to provide, and what you'll get back.
+This API supports typical <b>userDomain management operations</b> (login, create userDomain, update, delete, etc.) for two roles: <code>ADMIN</code> and <code>USER</code>. The list below explains how each call works, what you have to provide, and what you'll get back.
 
 -------------------------------------------------------------
 ## 🤖 SECTION 1: AS ADMIN 
 
 ### 1. [ADMIN] Login
 - Endpoint: POST /login
-- Description: Authenticates as admin user, returning a JWT token in the response.
+- Description: Authenticates as admin userDomain, returning a JWT token in the response.
 - Request Body Example:
   {
   "username": "admin",
@@ -568,16 +568,16 @@ This API supports typical <b>user management operations</b> (login, create user,
   }
 
 ### 2. [ADMIN] Create Customer
-- Endpoint: POST /users
+- Endpoint: POST /userDomains
 - Auth: Bearer token {{jwt_admin}}
-- Description: Admin creates a new CUSTOMER user.
+- Description: Admin creates a new CUSTOMER userDomain.
 - Request Body Example:
   {
   "name": "John Doe",
   "email": "john@doe.com.br",
   "username": "johnny",
   "password": "Password1@",
-  "role": "CUSTOMER",
+  "roleEnum": "CUSTOMER",
   "address": {
   "street": "Baker Street",
   "number": "221B",
@@ -586,42 +586,42 @@ This API supports typical <b>user management operations</b> (login, create user,
   "state": "BL"
   }
   }
-- Result: Returns the created user (with id and address).
+- Result: Returns the created userDomain (with id and address).
 
 ### 3. [ADMIN] Create Restaurant Owner
-- Endpoint: POST /users
+- Endpoint: POST /userDomains
 - Auth: Bearer token {{jwt_admin}}
-- Description: Admin creates a new RESTAURANT_OWNER user.
-- Request: Like above, but role is RESTAURANT_OWNER.
-- Result: Returns the created restaurant owner user.
+- Description: Admin creates a new RESTAURANT_OWNER userDomain.
+- Request: Like above, but roleEnum is RESTAURANT_OWNER.
+- Result: Returns the created restaurant owner userDomain.
 
 ### 4. [ADMIN] Create Admin
-- Endpoint: POST /users
+- Endpoint: POST /userDomains
 - Auth: Bearer token {{jwt_admin}}
 - Description: Admin creates another admin.
-- Request: Like above, but role is ADMIN.
+- Request: Like above, but roleEnum is ADMIN.
 - Result: Returns new admin.
 
 ### 5. [ADMIN] Get All Users
-- Endpoint: GET /users?page=0&size=10
+- Endpoint: GET /userDomains?page=0&size=10
 - Auth: Bearer token {{jwt_admin}}
-- Description: Admin retrieves a paginated list of all users.
+- Description: Admin retrieves a paginated list of all userDomains.
 - Params:
   page: Zero-based page index (default 0);
   size: Page size (default 10).
-- Result: Array of user info (paginated).
+- Result: Array of userDomain info (paginated).
 
 ### 6. [ADMIN] Get User From Id
-- Endpoint: GET /users/:id
+- Endpoint: GET /userDomains/:id
 - Auth: Bearer token {{jwt_admin}}
-- Description: Admin retrieves a user by specific UUID id.
-- Path: Replace :id with user's UUID.
-- Result: The user object for matching id.
+- Description: Admin retrieves a userDomain by specific UUID id.
+- Path: Replace :id with userDomain's UUID.
+- Result: The userDomain object for matching id.
 
 ### 7. [USER] Update User
-- Endpoint: PUT /users
+- Endpoint: PUT /userDomains
 - Auth: Bearer token {{jwt_admin}}
-- Description: Admin updates an existing user.
+- Description: Admin updates an existing userDomain.
 - Request Body Example:
   {
   "id": "4fd90a00-27ea-4c05-afd6-ba3e9d5cc33e",
@@ -629,7 +629,7 @@ This API supports typical <b>user management operations</b> (login, create user,
   "email": "john@doe.com.br",
   "username": "johnny",
   "password": "Password1@",
-  "role": "CUSTOMER",
+  "roleEnum": "CUSTOMER",
   "address": {
   "street": "Baker Street",
   "number": "221B",
@@ -638,12 +638,12 @@ This API supports typical <b>user management operations</b> (login, create user,
   "state": "BL"
   }
   }
-- Result: Returns the updated user info.
+- Result: Returns the updated userDomain info.
 
 ### 8. [USER] Delete User
-- Endpoint: DELETE /users/:id
+- Endpoint: DELETE /userDomains/:id
 - Auth: Bearer token {{jwt_admin}}
-- Description: Admin deletes a user by UUID.
+- Description: Admin deletes a userDomain by UUID.
 - Body: Often not needed for DELETE (UUID is in path).
 - Result: 204 No Content if successful.
 
@@ -651,7 +651,7 @@ This API supports typical <b>user management operations</b> (login, create user,
 ## 👨🏻‍💼 SECTION 2: AS USER
 
 ### 1. [USER] Create User
-- Endpoint: POST /users
+- Endpoint: POST /userDomains
 - Auth: None
 - Description: Anyone can register a new CUSTOMER.
 - Request Body Example:
@@ -660,7 +660,7 @@ This API supports typical <b>user management operations</b> (login, create user,
   "email": "jane@uol.com.br",
   "username": "jane",
   "password": "Password1@",
-  "role": "CUSTOMER",
+  "roleEnum": "CUSTOMER",
   "address": {
   "street": "Baker Street",
   "number": "221C",
@@ -669,12 +669,12 @@ This API supports typical <b>user management operations</b> (login, create user,
   "state": "BL"
   }
   }
-- Result: Returns the created user object.
+- Result: Returns the created userDomain object.
 
 ### 2. [USER] Login
 - Endpoint: POST /login
 - Auth: None
-- Description: Logs in as a regular user, returns a JWT as response.
+- Description: Logs in as a regular userDomain, returns a JWT as response.
 - Request:
   {
   "username": "jane",
@@ -683,25 +683,25 @@ This API supports typical <b>user management operations</b> (login, create user,
 - Result: Response with JWT token (stored as jwt_user).
 
 ### 3. [USER] Get All Users (ERROR)
-- Endpoint: GET /users
+- Endpoint: GET /userDomains
 - Auth: Bearer token {{jwt_user}}
-- Description: Not allowed for regular users. Will return an error (403 Forbidden).
+- Description: Not allowed for regular userDomains. Will return an error (403 Forbidden).
 
 ### 4. [USER] Get User From Id
-- Endpoint: GET /users/:id
+- Endpoint: GET /userDomains/:id
 - Auth: Bearer token {{jwt_user}}
-- Description: Gets a user's own info (OK only if UUID matches the logged-in user; 403 for others).
-- Result: Returns user info.
+- Description: Gets a userDomain's own info (OK only if UUID matches the logged-in userDomain; 403 for others).
+- Result: Returns userDomain info.
 
 ### 5. [USER] Update User
-- Endpoint: PUT /users
+- Endpoint: PUT /userDomains
 - Auth: Bearer token {{jwt_user}}
 - Description: User updates their own info.
-- Request: Must include id and all relevant user information.
-- Result: Returns updated user info.
+- Request: Must include id and all relevant userDomain information.
+- Result: Returns updated userDomain info.
 
 ### 6. [USER] Delete User
-- Endpoint: DELETE /users/:id
+- Endpoint: DELETE /userDomains/:id
 - Auth: Bearer token {{jwt_user}}
 - Description: User deletes themselves.
 - Result: 204 No Content if successful.
@@ -715,7 +715,7 @@ This API supports typical <b>user management operations</b> (login, create user,
 -------------------------------------------------------------
 ## 🔡 DATA FORMAT SUMMARY
 
-- Create/Update User: All user info + nested address.
+- Create/Update User: All userDomain info + nested address.
 - Login: Username and password.
 - Token: Returned on login, used as Bearer in Authorization header for other requests.
 
@@ -724,10 +724,10 @@ This API supports typical <b>user management operations</b> (login, create user,
 
 ### Admin:
 1. Login as admin (/login)
-2. Use jwt_admin to create users, get all users, update, delete.
+2. Use jwt_admin to create userDomains, get all userDomains, update, delete.
 
 ### User:
-1. Register (/users)
+1. Register (/userDomains)
 2. Login (/login) → get jwt_user
 3. Get/update/delete own account using token
 
@@ -735,7 +735,7 @@ This API supports typical <b>user management operations</b> (login, create user,
 ## 💬 COMMON RESPONSE BODIES
 
 - Success:
-  User object: id, name, email, username, role, address:{...}
+  User object: id, name, email, username, roleEnum, address:{...}
 - Login success:
   token, username, expiresAt, userId
 - Error:
@@ -746,7 +746,7 @@ This API supports typical <b>user management operations</b> (login, create user,
 
 - Always use the correct Bearer token (jwt_admin or jwt_user) when calling protected endpoints.
 - User endpoints (except registration and login) require JWT.
-- Admin can do everything; user can only manage themselves.
+- Admin can do everything; userDomain can only manage themselves.
 - For update or delete, always use correct id in the path and body.
 
 ## 💡 TODO
@@ -758,4 +758,4 @@ This API supports typical <b>user management operations</b> (login, create user,
 ### 🧪 Testing & Quality
 
 - Include a **code coverage badge/instructions**.
-- Add **sample integration tests** (especially for authentication/user management).
+- Add **sample integration tests** (especially for authentication/userDomain management).

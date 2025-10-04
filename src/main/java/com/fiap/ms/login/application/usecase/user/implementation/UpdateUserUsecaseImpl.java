@@ -1,47 +1,45 @@
 package com.fiap.ms.login.application.usecase.user.implementation;
 
-import com.fiap.ms.login.application.gateways.PasswordEncoderGateway;
+import com.fiap.ms.login.application.gateways.PasswordEncoder;
+import com.fiap.ms.login.application.gateways.User;
 import com.fiap.ms.login.application.usecase.user.UpdateUserUsecase;
-import com.fiap.ms.login.domain.model.Role;
-import com.fiap.ms.login.domain.model.User;
-import com.fiap.ms.login.domain.model.UserRepository;
+import com.fiap.ms.login.domain.enums.RoleEnum;
+import com.fiap.ms.login.domain.model.UserDomain;
 import com.fiap.ms.login.infrastructure.config.security.SecurityUtil;
-import java.util.Optional;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.stereotype.Service;
 
-@Service
 public class UpdateUserUsecaseImpl implements UpdateUserUsecase {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoderGateway passwordEncoderGateway;
+    private final User user;
+    private final PasswordEncoder passwordEncoder;
     private final SecurityUtil securityUtil;
 
     public UpdateUserUsecaseImpl(
-            UserRepository userRepository,
-            PasswordEncoderGateway passwordEncoderGateway,
+            User user,
+            PasswordEncoder passwordEncoder,
             SecurityUtil securityUtil
     ) {
-        this.userRepository = userRepository;
-        this.passwordEncoderGateway = passwordEncoderGateway;
+        this.user = user;
+        this.passwordEncoder = passwordEncoder;
         this.securityUtil = securityUtil;
     }
 
-  public User updateUser(User user) {
-    Long currentUserId = securityUtil.getUserId();
-    boolean isAdmin = securityUtil.isAdmin();
-    Role currentUserRole = securityUtil.getRole();
+    @Override
+    public UserDomain updateUser(UserDomain userDomain) {
+        Long currentUserId = securityUtil.getUserId();
+        boolean isAdmin = securityUtil.isAdmin();
+        RoleEnum currentUserRoleEnum = securityUtil.getRole();
 
-    if (!isAdmin) {
-      boolean notSameUser = !user.getId().equals(currentUserId);
-      boolean roleChanged = !user.getRole().equals(currentUserRole);
+        if (!isAdmin) {
+            boolean notSameUser = !userDomain.getId().equals(currentUserId);
+            boolean roleChanged = !userDomain.getRole().equals(currentUserRoleEnum);
 
-      if (notSameUser || roleChanged) {
-        throw new AccessDeniedException("Not allowed to update this user");
-      }
-    }
+            if (notSameUser || roleChanged) {
+                throw new AccessDeniedException("Not allowed to update this user");
+          }
+        }
 
-        user.setPassword(passwordEncoderGateway.encode(user.getPassword()));
-        return userRepository.update(user);
+        userDomain.setPassword(passwordEncoder.encode(userDomain.getPassword()));
+        return user.update(userDomain);
     }
 }

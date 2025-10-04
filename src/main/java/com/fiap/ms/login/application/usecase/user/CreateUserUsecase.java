@@ -1,7 +1,7 @@
 package com.fiap.ms.login.application.usecase.user;
 
-import com.fiap.ms.login.domain.model.User;
+import com.fiap.ms.login.domain.model.UserDomain;
 
 public interface CreateUserUsecase {
-    User createUser(User user);
+    UserDomain createUser(UserDomain userDomain);
 }
