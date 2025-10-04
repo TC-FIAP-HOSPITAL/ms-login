@@ -1,8 +1,9 @@
 package com.fiap.ms.login.application.usecase.user;
 
-import com.fiap.ms.login.domain.model.User;
+import com.fiap.ms.login.domain.model.UserDomain;
+
 import java.util.List;
 
 public interface GetUsersUsecase {
-    List<User> getUsers(Integer page, Integer size);
+    List<UserDomain> getUsers(Integer page, Integer size);
 }

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ms-login</a> &gt; <a href="index.source.html" class="el_package">com.fiap.ms.login.infrastructure.database.implementations</a> &gt; <span class="el_source">UserImpl.java</span></div><h1>UserImpl.java</h1><pre class="source lang-java linenums">package com.fiap.ms.login.infrastructure.database.implementations;
+
+import com.fiap.ms.login.domain.model.UserDomain;
+import com.fiap.ms.login.infrastructure.database.entities.JpaUserEntity;
+import com.fiap.ms.login.infrastructure.database.repositories.JpaUserRepositoryGateway;
+import com.fiap.ms.login.application.gateways.User;
+import com.fiap.ms.login.entrypoint.controllers.mappers.UserMapper;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import org.hibernate.Session;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class UserImpl implements User {
+
+    private final JpaUserRepositoryGateway jpaUserRepositoryGateway;
+    private final EntityManager entityManager;
+
+
+    public UserImpl(
+            JpaUserRepositoryGateway jpaUserRepositoryGateway,
+            EntityManager entityManager
+<span class="fc" id="L28">    ) {</span>
+<span class="fc" id="L29">        this.jpaUserRepositoryGateway = jpaUserRepositoryGateway;</span>
+<span class="fc" id="L30">        this.entityManager = entityManager;</span>
+<span class="fc" id="L31">    }</span>
+
+    @Override
+    public UserDomain save(UserDomain userDomain) {
+<span class="fc" id="L35">        JpaUserEntity userEntity = new JpaUserEntity(userDomain);</span>
+<span class="fc" id="L36">        JpaUserEntity savedUser = jpaUserRepositoryGateway.save(userEntity);</span>
+<span class="fc" id="L37">        return UserMapper.entityToDomain(savedUser);</span>
+    }
+
+    @Override
+    public UserDomain update(UserDomain userDomain) {
+<span class="fc" id="L42">        JpaUserEntity userEntity = jpaUserRepositoryGateway.findById(userDomain.getId())</span>
+<span class="fc" id="L43">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;User not found&quot;));</span>
+
+        // update user fields
+<span class="fc" id="L46">        userEntity.setName(userDomain.getName());</span>
+<span class="fc" id="L47">        userEntity.setEmail(userDomain.getEmail());</span>
+<span class="fc" id="L48">        userEntity.setUsername(userDomain.getUsername());</span>
+<span class="fc" id="L49">        userEntity.setPassword(userDomain.getPassword());</span>
+<span class="fc" id="L50">        userEntity.setRoleEnum(userDomain.getRole());</span>
+
+<span class="fc" id="L52">        JpaUserEntity savedUser = jpaUserRepositoryGateway.save(userEntity);</span>
+<span class="fc" id="L53">        return UserMapper.entityToDomain(savedUser);</span>
+    }
+
+    @Override
+    public List&lt;UserDomain&gt; findAllUsers(Integer page, Integer size) {
+<span class="fc" id="L58">        Session session = entityManager.unwrap(Session.class);</span>
+<span class="fc" id="L59">        session.enableFilter(&quot;deletedFilter&quot;).setParameter(&quot;isDeleted&quot;, false);</span>
+<span class="fc" id="L60">        Pageable pageable = PageRequest.of(page, size);</span>
+<span class="fc" id="L61">        return jpaUserRepositoryGateway.findAll(pageable).stream().map(UserMapper::entityToDomain).collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public Optional&lt;UserDomain&gt; findById(Long id) {
+<span class="fc" id="L66">        Session session = entityManager.unwrap(Session.class);</span>
+<span class="fc" id="L67">        session.enableFilter(&quot;deletedFilter&quot;).setParameter(&quot;isDeleted&quot;, false);</span>
+<span class="fc" id="L68">        return jpaUserRepositoryGateway.findById(id).map(UserMapper::entityToDomain);</span>
+    }
+
+    @Override
+    public Optional&lt;UserDomain&gt; findByUsername(String username) {
+<span class="fc" id="L73">        Session session = entityManager.unwrap(Session.class);</span>
+<span class="fc" id="L74">        session.enableFilter(&quot;deletedFilter&quot;).setParameter(&quot;isDeleted&quot;, false);</span>
+<span class="fc" id="L75">        return jpaUserRepositoryGateway.findByUsername(username).map(UserMapper::entityToDomain);</span>
+    }
+
+    @Override
+    public void delete(Long id) {
+<span class="fc" id="L80">        JpaUserEntity userEntity = jpaUserRepositoryGateway.findById(id)</span>
+<span class="pc" id="L81">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;User not found&quot;));</span>
+<span class="fc" id="L82">        userEntity.setDeleted(true);</span>
+<span class="fc" id="L83">        jpaUserRepositoryGateway.save(userEntity);</span>
+<span class="fc" id="L84">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

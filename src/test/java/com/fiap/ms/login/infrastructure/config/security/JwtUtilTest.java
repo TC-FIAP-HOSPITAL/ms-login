@@ -8,11 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.security.Key;
 import java.util.Date;
 
+import com.fiap.ms.login.domain.enums.RoleEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import com.fiap.ms.login.domain.model.Role;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -24,7 +23,7 @@ class JwtUtilTest {
     private final String TEST_SECRET = "testSecretKeyWithAtLeast256BitsForHS256Algorithm";
     private final String TEST_USERNAME = "testuser";
     private final String TEST_USER_ID = "1";
-    private final Role TEST_ROLE = Role.ADMIN;
+    private final RoleEnum TEST_ROLEEnum = RoleEnum.ADMIN;
 
     @BeforeEach
     void setUp() {
@@ -35,7 +34,7 @@ class JwtUtilTest {
     @Test
     void generateToken_shouldCreateValidToken() {
         // Act
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLE);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum);
 
         // Assert
         assertNotNull(token);
@@ -46,7 +45,7 @@ class JwtUtilTest {
     @Test
     void extractClaims_shouldReturnValidClaims() {
         // Arrange
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLE);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum);
 
         // Act
         Claims claims = jwtUtil.extractClaims(token);
@@ -55,13 +54,13 @@ class JwtUtilTest {
         assertNotNull(claims);
         assertEquals(TEST_USERNAME, claims.getSubject());
         assertEquals(TEST_USER_ID, claims.get("userId"));
-        assertEquals(TEST_ROLE.name(), claims.get("role"));
+        assertEquals(TEST_ROLEEnum.name(), claims.get("role"));
     }
 
     @Test
     void extractUsername_shouldReturnCorrectUsername() {
         // Arrange
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLE);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum);
         Claims claims = jwtUtil.extractClaims(token);
 
         // Act
@@ -74,7 +73,7 @@ class JwtUtilTest {
     @Test
     void extractUserId_shouldReturnCorrectUserId() {
         // Arrange
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLE);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum);
         Claims claims = jwtUtil.extractClaims(token);
 
         // Act
@@ -87,7 +86,7 @@ class JwtUtilTest {
     @Test
     void extractExpirationDate_shouldReturnCorrectExpiration() {
         // Arrange
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLE);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum);
         Claims claims = jwtUtil.extractClaims(token);
 
         // Act
@@ -100,7 +99,7 @@ class JwtUtilTest {
     @Test
     void extractExpirationDateFromToken_shouldReturnCorrectExpiration() {
         // Arrange
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLE);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum);
 
         // Act
         Date expirationDate = jwtUtil.extractExpirationDateFromToken(token);
@@ -112,7 +111,7 @@ class JwtUtilTest {
     @Test
     void validateToken_withValidToken_shouldReturnTrue() {
         // Arrange
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLE);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum);
 
         // Act & Assert
         assertTrue(jwtUtil.validateToken(token));
@@ -135,7 +134,7 @@ class JwtUtilTest {
         String expiredToken = Jwts.builder()
                 .setSubject(TEST_USERNAME)
                 .claim("userId", TEST_USER_ID)
-                .claim("role", TEST_ROLE.name())
+                .claim("role", TEST_ROLEEnum.name())
                 .setIssuedAt(new Date())
                 .setExpiration(past)
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -148,13 +147,13 @@ class JwtUtilTest {
     @Test
     void extractRole_shouldReturnCorrectRole() {
         // Arrange
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLE);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum);
         Claims claims = jwtUtil.extractClaims(token);
 
         // Act
-        Role role = jwtUtil.extractRole(claims);
+        RoleEnum roleEnum = jwtUtil.extractRole(claims);
 
         // Assert
-        assertEquals(TEST_ROLE, role);
+        assertEquals(TEST_ROLEEnum, roleEnum);
     }
 }

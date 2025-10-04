@@ -1,15 +1,11 @@
 package com.fiap.ms.login.entrypoint.controllers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.Date;
-
+import com.fiap.ms.login.domain.enums.RoleEnum;
+import com.fiap.ms.login.entrypoint.controllers.dto.LoginRequestDTO;
+import com.fiap.ms.login.entrypoint.controllers.dto.LoginResponse;
+import com.fiap.ms.login.infrastructure.config.security.JwtUtil;
+import com.fiap.ms.login.infrastructure.config.security.MyUserDetails;
+import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,11 +17,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import com.fiap.ms.login.domain.model.Role;
-import com.fiap.ms.login.infrastructure.config.security.JwtUtil;
-import com.fiap.ms.login.infrastructure.config.security.MyUserDetails;
+import java.util.Arrays;
+import java.util.Date;
 
-import io.jsonwebtoken.Claims;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AuthControllerTest {
@@ -62,16 +62,16 @@ class AuthControllerTest {
 
     @Test
     void login_shouldAuthenticateAndReturnToken() {
-        AuthController.LoginRequestDTO loginRequest = new AuthController.LoginRequestDTO("testuser", "password");
+        LoginRequestDTO loginRequest = new LoginRequestDTO("testuser", "password");
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
-        when(jwtUtil.generateToken(anyString(), anyString(), any(Role.class))).thenReturn("test-token");
+        when(jwtUtil.generateToken(anyString(), anyString(), any(RoleEnum.class))).thenReturn("test-token");
         when(jwtUtil.extractClaims(anyString())).thenReturn(claims);
         when(jwtUtil.extractExpirationDate(claims)).thenReturn(expirationDate);
         when(jwtUtil.extractUserId(claims)).thenReturn("1");
 
-        AuthController.LoginResponse response = authController.login(loginRequest);
+        LoginResponse response = authController.login(loginRequest);
 
         assertNotNull(response);
         assertEquals("test-token", response.token());

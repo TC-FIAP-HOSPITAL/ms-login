@@ -1,9 +1,9 @@
 package com.fiap.ms.login.application.usecase.user.implementation;
 
-import com.fiap.ms.login.application.gateways.PasswordEncoderGateway;
-import com.fiap.ms.login.domain.model.Role;
-import com.fiap.ms.login.domain.model.User;
-import com.fiap.ms.login.domain.model.UserRepository;
+import com.fiap.ms.login.application.gateways.PasswordEncoder;
+import com.fiap.ms.login.domain.enums.RoleEnum;
+import com.fiap.ms.login.domain.model.UserDomain;
+import com.fiap.ms.login.application.gateways.User;
 import com.fiap.ms.login.infrastructure.config.security.SecurityUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,10 +24,10 @@ import static org.mockito.Mockito.when;
 class GetUsersUsecaseImplTest {
 
     @Mock
-    private UserRepository userRepository;
+    private User user;
 
     @Mock
-    private PasswordEncoderGateway passwordEncoderGateway;
+    private PasswordEncoder passwordEncoder;
 
     @Mock
     private SecurityUtil securityUtil;
@@ -35,16 +35,16 @@ class GetUsersUsecaseImplTest {
     @InjectMocks
     private GetUsersUsecaseImpl getUsersUsecase;
 
-    private User user1;
-    private User user2;
-    private List<User> users;
+    private UserDomain userDomain1;
+    private UserDomain userDomain2;
+    private List<UserDomain> userDomains;
 
     @BeforeEach
     void setUp() {
         LocalDateTime now = LocalDateTime.now();
-        user1 = new User(1L, "Test User 1", "test1@example.com", "testuser1", "password", Role.PACIENTE, now, now);
-        user2 = new User(2L, "Test User 2", "test2@example.com", "testuser2", "password", Role.PACIENTE, now, now);
-        users = Arrays.asList(user1, user2);
+        userDomain1 = new UserDomain(1L, "Test User 1", "test1@example.com", "testuser1", "password", RoleEnum.PACIENTE, now, now);
+        userDomain2 = new UserDomain(2L, "Test User 2", "test2@example.com", "testuser2", "password", RoleEnum.PACIENTE, now, now);
+        userDomains = Arrays.asList(userDomain1, userDomain2);
     }
 
     @Test
@@ -52,15 +52,15 @@ class GetUsersUsecaseImplTest {
         Integer page = 0;
         Integer size = 10;
         when(securityUtil.isAdmin()).thenReturn(true);
-        when(userRepository.findAllUsers(page, size)).thenReturn(users);
+        when(user.findAllUsers(page, size)).thenReturn(userDomains);
 
-        List<User> result = getUsersUsecase.getUsers(page, size);
+        List<UserDomain> result = getUsersUsecase.getUsers(page, size);
 
         assertEquals(2, result.size());
-        assertEquals(user1.getId(), result.get(0).getId());
-        assertEquals(user1.getName(), result.get(0).getName());
-        assertEquals(user2.getId(), result.get(1).getId());
-        assertEquals(user2.getName(), result.get(1).getName());
+        assertEquals(userDomain1.getId(), result.get(0).getId());
+        assertEquals(userDomain1.getName(), result.get(0).getName());
+        assertEquals(userDomain2.getId(), result.get(1).getId());
+        assertEquals(userDomain2.getName(), result.get(1).getName());
     }
 
     @Test

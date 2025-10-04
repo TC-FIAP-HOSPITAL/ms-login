@@ -1,41 +1,39 @@
 package com.fiap.ms.login.application.usecase.user.implementation;
 
-import com.fiap.ms.login.application.gateways.PasswordEncoderGateway;
+import com.fiap.ms.login.application.gateways.PasswordEncoder;
+import com.fiap.ms.login.application.gateways.User;
 import com.fiap.ms.login.application.usecase.user.CreateUserUsecase;
-import com.fiap.ms.login.domain.model.Role;
-import com.fiap.ms.login.domain.model.User;
-import com.fiap.ms.login.domain.model.UserRepository;
+import com.fiap.ms.login.domain.enums.RoleEnum;
+import com.fiap.ms.login.domain.model.UserDomain;
 import com.fiap.ms.login.infrastructure.config.security.SecurityUtil;
 import org.springframework.security.access.AccessDeniedException;
 
-import org.springframework.stereotype.Service;
-
-@Service
 public class CreateUserUsecaseImpl implements CreateUserUsecase {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoderGateway passwordEncoderGateway;
+    private final User user;
+    private final PasswordEncoder passwordEncoder;
     private final SecurityUtil securityUtil;
 
     public CreateUserUsecaseImpl(
-            UserRepository userRepository,
-            PasswordEncoderGateway passwordEncoderGateway,
+            User user,
+            PasswordEncoder passwordEncoder,
             SecurityUtil securityUtil
     ) {
-        this.userRepository = userRepository;
-        this.passwordEncoderGateway = passwordEncoderGateway;
+        this.user = user;
+        this.passwordEncoder = passwordEncoder;
         this.securityUtil = securityUtil;
     }
 
-    public User createUser(User user) {
+    @Override
+    public UserDomain createUser(UserDomain userDomain) {
         boolean isAdmin = securityUtil.isAdmin();
-        Role roleUser = user.getRole();
+        RoleEnum roleEnumUser = userDomain.getRole();
 
-        if (roleUser != Role.PACIENTE && !isAdmin) {
+        if (roleEnumUser != RoleEnum.PACIENTE && !isAdmin) {
             throw new AccessDeniedException(null);
         }
 
-        user.setPassword(passwordEncoderGateway.encode(user.getPassword()));
-        return userRepository.save(user);
+        userDomain.setPassword(passwordEncoder.encode(userDomain.getPassword()));
+        return user.save(userDomain);
     }
 }

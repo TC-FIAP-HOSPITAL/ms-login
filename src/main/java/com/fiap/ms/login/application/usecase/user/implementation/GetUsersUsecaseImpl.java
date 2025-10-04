@@ -1,36 +1,36 @@
 package com.fiap.ms.login.application.usecase.user.implementation;
 
-import com.fiap.ms.login.application.gateways.PasswordEncoderGateway;
+import com.fiap.ms.login.application.gateways.PasswordEncoder;
+import com.fiap.ms.login.application.gateways.User;
 import com.fiap.ms.login.application.usecase.user.GetUsersUsecase;
-import com.fiap.ms.login.domain.model.User;
-import com.fiap.ms.login.domain.model.UserRepository;
+import com.fiap.ms.login.domain.model.UserDomain;
 import com.fiap.ms.login.infrastructure.config.security.SecurityUtil;
-import java.util.List;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
 
-@Service
+import java.util.List;
+
 public class GetUsersUsecaseImpl implements GetUsersUsecase {
 
-    private final UserRepository userRepository;
+    private final User user;
     private final SecurityUtil securityUtil;
 
     public GetUsersUsecaseImpl(
-            UserRepository userRepository,
-            PasswordEncoderGateway passwordEncoderGateway,
+            User user,
+            PasswordEncoder passwordEncoder,
             SecurityUtil securityUtil
     ) {
-        this.userRepository = userRepository;
+        this.user = user;
         this.securityUtil = securityUtil;
     }
 
-    public List<User> getUsers(Integer page, Integer size) {
+    @Override
+    public List<UserDomain> getUsers(Integer page, Integer size) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (!securityUtil.isAdmin()) {
             throw new AccessDeniedException(null);
         };
-        return userRepository.findAllUsers(page, size);
+        return user.findAllUsers(page, size);
     }
 }

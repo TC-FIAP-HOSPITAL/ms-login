@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ms-login</a> &gt; <a href="index.source.html" class="el_package">com.fiap.ms.login.entrypoint.controllers</a> &gt; <span class="el_source">UserController.java</span></div><h1>UserController.java</h1><pre class="source lang-java linenums">package com.fiap.ms.login.entrypoint.controllers;
+
+import com.fiap.ms.login.application.usecase.user.CreateUserUsecase;
+import com.fiap.ms.login.application.usecase.user.DeleteUserUsecase;
+import com.fiap.ms.login.application.usecase.user.GetUserByIdUsecase;
+import com.fiap.ms.login.application.usecase.user.GetUsersUsecase;
+import com.fiap.ms.login.application.usecase.user.UpdateUserUsecase;
+import com.fiap.ms.login.domain.model.UserDomain;
+import com.fiap.ms.login.entrypoint.controllers.dto.UserDtoRequest;
+import com.fiap.ms.login.entrypoint.controllers.dto.UserDtoResponse;
+import com.fiap.ms.login.domain.exceptions.UserNotFoundException;
+import com.fiap.ms.login.entrypoint.controllers.mappers.UserMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping(&quot;/v1/users&quot;)
+public class UserController {
+    private final CreateUserUsecase createUserUsecase;
+    private final DeleteUserUsecase deleteUserUsecase;
+    private final GetUserByIdUsecase getUserByIdUsecase;
+    private final GetUsersUsecase getUsersUsecase;
+    private final UpdateUserUsecase updateUserUsecase;
+
+    public UserController(
+            CreateUserUsecase createUserUsecase,
+            DeleteUserUsecase deleteUserUsecase,
+            GetUserByIdUsecase getUserByIdUsecase,
+            GetUsersUsecase getUserUsecase,
+            UpdateUserUsecase updateUserUsecase
+<span class="fc" id="L45">            ) {</span>
+<span class="fc" id="L46">        this.createUserUsecase = createUserUsecase;</span>
+<span class="fc" id="L47">        this.deleteUserUsecase = deleteUserUsecase;</span>
+<span class="fc" id="L48">        this.getUserByIdUsecase = getUserByIdUsecase;</span>
+<span class="fc" id="L49">        this.getUsersUsecase = getUserUsecase;</span>
+<span class="fc" id="L50">        this.updateUserUsecase = updateUserUsecase;</span>
+<span class="fc" id="L51">    }</span>
+
+    @Operation(summary = &quot;Get all users. Administrators only.&quot;, description = &quot;Returns a list of all users.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Users retrieved successfully&quot;)
+    @GetMapping
+    @PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+    public ResponseEntity&lt;List&lt;UserDtoResponse&gt;&gt; getUsers(@RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">        page = page == null ? 1 : page;</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        size = size == null ? 10 : size;</span>
+<span class="fc" id="L60">        List&lt;UserDomain&gt; userDomains = getUsersUsecase.getUsers(page, size);</span>
+<span class="fc" id="L61">        List&lt;UserDtoResponse&gt; usersDtoResponse = userDomains.stream()</span>
+<span class="fc" id="L62">                .map(UserMapper::domainToDto)</span>
+<span class="fc" id="L63">                .toList();</span>
+<span class="fc" id="L64">        return ResponseEntity.ok().body(usersDtoResponse);</span>
+    }
+
+    @Operation(summary = &quot;Get user by ID. User can only get it's own data. Admin can get any user.&quot;, description = &quot;Returns a user by their ID.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;User retrieved successfully&quot;)
+    @GetMapping(&quot;/{user_id}&quot;)
+    public ResponseEntity&lt;UserDtoResponse&gt; getUser(@PathVariable(&quot;user_id&quot;) String id) {
+<span class="fc" id="L71">        Optional&lt;UserDomain&gt; user = getUserByIdUsecase.getUserById(id);</span>
+<span class="fc" id="L72">        return user.map(value -&gt; ResponseEntity.ok().body(UserMapper.domainToDto(value))).orElseThrow(() -&gt; new UserNotFoundException(&quot;User not found&quot;));</span>
+    }
+
+    @Operation(summary = &quot;Create a new user. Can only create PATIENT role. Admin can create any role.&quot;, description = &quot;Creates a new user.&quot;)
+    @ApiResponse(responseCode = &quot;201&quot;, description = &quot;User created successfully&quot;)
+    @PostMapping
+    public ResponseEntity&lt;UserDtoResponse&gt; createUser(@RequestBody UserDtoRequest userDTORequest) {
+<span class="fc" id="L79">        UserDomain userDomain = UserMapper.dtoToDomain(userDTORequest);</span>
+<span class="fc" id="L80">        UserDomain createdUserDomain = createUserUsecase.createUser(userDomain);</span>
+<span class="fc" id="L81">        UserDtoResponse userDtoResponse = UserMapper.domainToDto(createdUserDomain);</span>
+<span class="fc" id="L82">        return ResponseEntity.status(HttpStatus.CREATED).body(userDtoResponse);</span>
+    }
+
+    @Operation(summary = &quot;Update user content. Only admin can change other users. User can change itself, except for role.&quot;, description = &quot;Updates user data.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;User updated successfully&quot;)
+    @PutMapping
+    public ResponseEntity&lt;UserDtoResponse&gt; updateUser(@RequestBody UserDtoRequest userDtoRequest) {
+<span class="fc" id="L89">        UserDomain userDomain = UserMapper.dtoToDomain(userDtoRequest);</span>
+<span class="fc" id="L90">        UserDomain updatedUserDomain = updateUserUsecase.updateUser(userDomain);</span>
+<span class="fc" id="L91">        UserDtoResponse userDtoResponse = UserMapper.domainToDto(updatedUserDomain);</span>
+<span class="fc" id="L92">        return ResponseEntity.ok().body(userDtoResponse);</span>
+    }
+
+    @Operation(summary = &quot;Excludes an user. Only admin can exclude other users. User can exclude itself.&quot;, description = &quot;Excludes an user.&quot;)
+    @ApiResponse(responseCode = &quot;204&quot;, description = &quot;User deleted successfully&quot;)
+    @DeleteMapping(&quot;/{user_id}&quot;)
+    public ResponseEntity&lt;Void&gt; deleteUser(@PathVariable(&quot;user_id&quot;) String id ) {
+<span class="fc" id="L99">        deleteUserUsecase.deleteUser(id);</span>
+<span class="fc" id="L100">        return ResponseEntity.noContent().build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
