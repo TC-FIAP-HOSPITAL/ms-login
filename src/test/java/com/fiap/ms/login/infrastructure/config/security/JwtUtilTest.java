@@ -8,10 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.security.Key;
 import java.util.Date;
 
-import com.fiap.ms.login.domain.enums.RoleEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import com.fiap.ms.login.domain.enums.RoleEnum;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -128,19 +129,18 @@ class JwtUtilTest {
 
     @Test
     void validateToken_withExpiredToken_shouldReturnFalse() {
-        // Arrange
         Key key = (Key) ReflectionTestUtils.invokeMethod(jwtUtil, "getSigningKey");
+        Date issued = new Date(System.currentTimeMillis() - 5000);
         Date past = new Date(System.currentTimeMillis() - 1000);
         String expiredToken = Jwts.builder()
                 .setSubject(TEST_USERNAME)
                 .claim("userId", TEST_USER_ID)
                 .claim("role", TEST_ROLEEnum.name())
-                .setIssuedAt(new Date())
+                .setIssuedAt(issued)
                 .setExpiration(past)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
-        // Act & Assert
         assertFalse(jwtUtil.validateToken(expiredToken));
     }
 
