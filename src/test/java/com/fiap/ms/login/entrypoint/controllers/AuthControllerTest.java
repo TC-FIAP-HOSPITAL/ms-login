@@ -1,11 +1,16 @@
 package com.fiap.ms.login.entrypoint.controllers;
 
-import com.fiap.ms.login.domain.enums.RoleEnum;
-import com.fiap.ms.login.entrypoint.controllers.dto.LoginRequestDTO;
-import com.fiap.ms.login.entrypoint.controllers.dto.LoginResponse;
-import com.fiap.ms.login.infrastructure.config.security.JwtUtil;
-import com.fiap.ms.login.infrastructure.config.security.MyUserDetails;
-import io.jsonwebtoken.Claims;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Date;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,15 +22,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.Arrays;
-import java.util.Date;
+import com.fiap.ms.login.domain.enums.RoleEnum;
+import com.fiap.ms.login.entrypoint.controllers.dto.LoginRequestDTO;
+import com.fiap.ms.login.entrypoint.controllers.dto.LoginResponse;
+import com.fiap.ms.login.infrastructure.config.security.JwtUtil;
+import com.fiap.ms.login.infrastructure.config.security.MyUserDetails;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import io.jsonwebtoken.Claims;
 
 @ExtendWith(MockitoExtension.class)
 class AuthControllerTest {
@@ -66,7 +69,9 @@ class AuthControllerTest {
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
-        when(jwtUtil.generateToken(anyString(), anyString(), any(RoleEnum.class))).thenReturn("test-token");
+        when(userDetails.getEmail()).thenReturn("test@example.com");
+        when(jwtUtil.generateToken(eq("testuser"), eq("1"), any(RoleEnum.class), eq("test@example.com")))
+                .thenReturn("test-token");
         when(jwtUtil.extractClaims(anyString())).thenReturn(claims);
         when(jwtUtil.extractExpirationDate(claims)).thenReturn(expirationDate);
         when(jwtUtil.extractUserId(claims)).thenReturn("1");

@@ -25,6 +25,7 @@ class JwtUtilTest {
     private final String TEST_USERNAME = "testuser";
     private final String TEST_USER_ID = "1";
     private final RoleEnum TEST_ROLEEnum = RoleEnum.ADMIN;
+    private final String TEST_EMAIL = "test@example.com";
 
     @BeforeEach
     void setUp() {
@@ -35,7 +36,7 @@ class JwtUtilTest {
     @Test
     void generateToken_shouldCreateValidToken() {
         // Act
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum, TEST_EMAIL);
 
         // Assert
         assertNotNull(token);
@@ -46,7 +47,7 @@ class JwtUtilTest {
     @Test
     void extractClaims_shouldReturnValidClaims() {
         // Arrange
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum, TEST_EMAIL);
 
         // Act
         Claims claims = jwtUtil.extractClaims(token);
@@ -56,12 +57,13 @@ class JwtUtilTest {
         assertEquals(TEST_USERNAME, claims.getSubject());
         assertEquals(TEST_USER_ID, claims.get("userId"));
         assertEquals(TEST_ROLEEnum.name(), claims.get("role"));
+        assertEquals(TEST_EMAIL, claims.get("email"));
     }
 
     @Test
     void extractUsername_shouldReturnCorrectUsername() {
         // Arrange
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum, TEST_EMAIL);
         Claims claims = jwtUtil.extractClaims(token);
 
         // Act
@@ -74,7 +76,7 @@ class JwtUtilTest {
     @Test
     void extractUserId_shouldReturnCorrectUserId() {
         // Arrange
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum, TEST_EMAIL);
         Claims claims = jwtUtil.extractClaims(token);
 
         // Act
@@ -87,7 +89,7 @@ class JwtUtilTest {
     @Test
     void extractExpirationDate_shouldReturnCorrectExpiration() {
         // Arrange
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum, TEST_EMAIL);
         Claims claims = jwtUtil.extractClaims(token);
 
         // Act
@@ -100,7 +102,7 @@ class JwtUtilTest {
     @Test
     void extractExpirationDateFromToken_shouldReturnCorrectExpiration() {
         // Arrange
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum, TEST_EMAIL);
 
         // Act
         Date expirationDate = jwtUtil.extractExpirationDateFromToken(token);
@@ -112,7 +114,7 @@ class JwtUtilTest {
     @Test
     void validateToken_withValidToken_shouldReturnTrue() {
         // Arrange
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum, TEST_EMAIL);
 
         // Act & Assert
         assertTrue(jwtUtil.validateToken(token));
@@ -136,6 +138,7 @@ class JwtUtilTest {
                 .setSubject(TEST_USERNAME)
                 .claim("userId", TEST_USER_ID)
                 .claim("role", TEST_ROLEEnum.name())
+                .claim("email", TEST_EMAIL)
                 .setIssuedAt(issued)
                 .setExpiration(past)
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -147,7 +150,7 @@ class JwtUtilTest {
     @Test
     void extractRole_shouldReturnCorrectRole() {
         // Arrange
-        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum);
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum, TEST_EMAIL);
         Claims claims = jwtUtil.extractClaims(token);
 
         // Act
@@ -155,5 +158,16 @@ class JwtUtilTest {
 
         // Assert
         assertEquals(TEST_ROLEEnum, roleEnum);
+        assertEquals(TEST_EMAIL, claims.get("email"));
+    }
+
+    @Test
+    void extractEmail_shouldReturnCorrectEmail() {
+        String token = jwtUtil.generateToken(TEST_USERNAME, TEST_USER_ID, TEST_ROLEEnum, TEST_EMAIL);
+        Claims claims = jwtUtil.extractClaims(token);
+
+        String email = jwtUtil.extractEmail(claims);
+
+        assertEquals(TEST_EMAIL, email);
     }
 }

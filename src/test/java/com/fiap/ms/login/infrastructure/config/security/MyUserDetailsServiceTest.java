@@ -41,6 +41,7 @@ class MyUserDetailsServiceTest {
         assertEquals("john", userDetails.getUsername());
         assertEquals("password", userDetails.getPassword());
         assertEquals("ROLE_ADMIN", userDetails.getAuthorities().iterator().next().getAuthority());
+        assertEquals("john@example.com", ((MyUserDetails) userDetails).getEmail());
     }
 
     @Test

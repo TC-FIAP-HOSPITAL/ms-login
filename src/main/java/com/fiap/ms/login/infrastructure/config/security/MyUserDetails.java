@@ -1,10 +1,12 @@
 package com.fiap.ms.login.infrastructure.config.security;
 
-import lombok.Builder;
-import lombok.Getter;
+import java.util.Collection;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import java.util.Collection;
+
+import lombok.Builder;
+import lombok.Getter;
 
 @Builder
 @Getter
@@ -12,6 +14,7 @@ public class MyUserDetails implements UserDetails {
     private Long userId;
     private String username;
     private String password;
+    private String email;
     private Collection<? extends GrantedAuthority> authorities;
 
     @Override
