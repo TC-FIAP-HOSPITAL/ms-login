@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.fiap.ms.login.entrypoint.controllers.UserDomainControllerTest
--------------------------------------------------------------------------------
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.133 s -- in com.fiap.ms.login.entrypoint.controllers.UserDomainControllerTest

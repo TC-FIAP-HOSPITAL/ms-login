@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.fiap.ms.login.infrastructure.config.security.MyUserDomainDetailsServiceTest
--------------------------------------------------------------------------------
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in com.fiap.ms.login.infrastructure.config.security.MyUserDomainDetailsServiceTest
