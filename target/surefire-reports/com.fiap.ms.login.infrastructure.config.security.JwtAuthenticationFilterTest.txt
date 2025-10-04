@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.fiap.ms.login.infrastructure.config.security.JwtAuthenticationFilterTest
--------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.153 s -- in com.fiap.ms.login.infrastructure.config.security.JwtAuthenticationFilterTest

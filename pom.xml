@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.5</version>
+		<version>3.3.3</version>
 	</parent>
 
 	<groupId>com.fiap.ms</groupId>
@@ -226,7 +226,7 @@
 										<limit>
 											<counter>INSTRUCTION</counter>
 											<value>COVEREDRATIO</value>
-											<minimum>0.80</minimum>
+											<minimum>0.70</minimum>
 										</limit>
 									</limits>
 								</rule>

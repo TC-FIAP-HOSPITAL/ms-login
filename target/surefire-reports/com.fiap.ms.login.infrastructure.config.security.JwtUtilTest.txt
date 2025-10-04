@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.fiap.ms.login.infrastructure.config.security.JwtUtilTest
--------------------------------------------------------------------------------
-Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.339 s -- in com.fiap.ms.login.infrastructure.config.security.JwtUtilTest
